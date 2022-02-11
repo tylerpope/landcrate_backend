@@ -1,0 +1,24 @@
+{
+  "name": "manavault_be",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.1",
+    "express": "^4.17.2",
+    "jsonwebtoken": "^8.5.1",
+    "passport": "^0.5.2",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
+    "pg": "^8.7.1",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.12.5",
+    "sequelize-cli": "^6.3.0",
+    "stream-json": "^1.7.3"
+  },
+  "scripts": {
+    "sync:db": "node ./db/sync",
+    "start": "nodemon index.js"
+  }
+}
