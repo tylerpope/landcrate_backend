@@ -4,7 +4,7 @@ const passport = require("passport");
 const db = require("../../../db/models");
 
 router.get(
-  "/inventory",
+  "/collection",
   passport.authenticate("jwt", { session: false }),
   async (req, res, next) => {
     try {
