@@ -27,9 +27,8 @@ router.get(
           ],
         },
       });
-      res.send(cards);
+      res.status(200).send(cards);
     } catch (error) {
-      console.error(error);
       return next(error);
     }
   }

@@ -34,6 +34,7 @@ const createCards = async (model, value) => {
       toughness: value.toughness,
       typeLine: value.type_line,
       artist: value.artist,
+      imageUris: value.image_uris ? JSON.stringify(value.image_uris) : null,
       borderColor: value.border_color,
       cardBackId: value.card_back_id,
       collectorNumber: value.collector_number,
@@ -54,7 +55,7 @@ const createCards = async (model, value) => {
       setName: value.set_name,
     });
   } catch (err) {
-    console.error(err)
+    console.error(err);
   }
 };
 
@@ -76,7 +77,7 @@ const createCardColor = async (model, value) => {
       }
     });
   } catch (err) {
-    console.error(err)
+    console.error(err);
   }
 };
 
@@ -98,11 +99,13 @@ const createPrices = async (model, value = {}) => {
                 typeval = "NON-FOIL";
                 break;
             }
-            model.upsert({
-              cardId: value.id,
-              type: typeval,
-              price,
-            });
+            if (price) {
+              model.upsert({
+                cardId: value.id,
+                type: typeval,
+                price,
+              });
+            }
           }
           if (index === Object.entries(value.prices).length - 1) {
             resolve();
@@ -113,7 +116,7 @@ const createPrices = async (model, value = {}) => {
       }
     });
   } catch (err) {
-    console.error(err)
+    console.error(err);
   }
 };
 
@@ -135,7 +138,7 @@ const createCardColorIdentity = async (model, value = {}) => {
       }
     });
   } catch (err) {
-    console.error(err)
+    console.error(err);
   }
 };
 
@@ -196,6 +199,6 @@ const syncPrices = () => {
 
   //So we're waiting for the 'finish' event when everything is done.
   processingStream.on("finish", () => console.log("All done"));
-}
+};
 
 syncAll();

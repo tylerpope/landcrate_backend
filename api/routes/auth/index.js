@@ -3,10 +3,6 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
 
-router.get("/", (req, res) => {
-  res.json("awth");
-});
-
 router.post(
   "/signup",
   passport.authenticate("signup", { session: false }),
@@ -22,8 +18,8 @@ router.post("/signin", async (req, res, next) => {
   passport.authenticate("login", async (err, user, info = {}) => {
     try {
       if (err || !user) {
-        const error = new Error(info.message || err || "An error occured.");
-        return next(error);
+        const errorMessage = info.message || err || "An error occured."
+        return res.status(401).send(errorMessage)
       }
       req.login(user, { session: false }, async (error) => {
         if (error) return next(error);
@@ -31,7 +27,10 @@ router.post("/signin", async (req, res, next) => {
         const body = { id: user.id, email: user.email };
         const token = jwt.sign({ user: body }, process.env.SECRET);
 
-        return res.json({ token });
+        return res.json({
+          email: user.email,
+          accessToken: token,
+        });
       });
     } catch (error) {
       return next(error);

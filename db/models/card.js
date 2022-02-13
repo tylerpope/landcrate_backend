@@ -50,6 +50,7 @@ module.exports = (sequelize, DataTypes) => {
       toughness: DataTypes.TEXT,
       typeLine: DataTypes.TEXT,
       artist: DataTypes.TEXT,
+      imageUris: DataTypes.JSON,
       borderColor: DataTypes.ENUM(
         "black",
         "white",

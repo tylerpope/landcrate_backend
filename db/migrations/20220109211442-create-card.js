@@ -81,6 +81,9 @@ module.exports = {
       artist: {
         type: Sequelize.TEXT,
       },
+      imageUris: {
+        type: Sequelize.JSON,
+      },
       borderColor: {
         type: Sequelize.ENUM("black", "white", "borderless", "silver", "gold"),
       },
