@@ -14,7 +14,6 @@ passport.use(
     async (email, password, done) => {
       try {
         const user = await db.User.create({ email, password });
-
         return done(null, user);
       } catch (error) {
         done(error);

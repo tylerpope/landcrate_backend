@@ -26,6 +26,10 @@ module.exports = {
         type: Sequelize.DATE,
       },
     });
+    await queryInterface.addConstraint("Users", {
+      fields: ["email"],
+      type: "unique",
+    });
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable("Users");
