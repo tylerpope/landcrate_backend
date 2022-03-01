@@ -8,7 +8,7 @@ const user = require("./api/routes/user");
 require("./services/auth")
 
 app.use(bodyParser.json());
-app.use('/api/test', (req, res) => res.send('test'))
+app.use("/api/test", (req, res) => res.send('test'))
 app.use("/api/auth", auth);
 app.use("/api/user", user);
 
