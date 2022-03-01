@@ -2,22 +2,14 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable("CardColors", {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-      },
       cardId: {
         type: Sequelize.UUID,
+        primaryKey: true,
       },
       color: {
         type: Sequelize.TEXT,
+        primaryKey: true,
       },
-    });
-    await queryInterface.addConstraint("CardColors", {
-      fields: ["cardId", "color"],
-      type: "unique",
     });
   },
   down: async (queryInterface, Sequelize) => {

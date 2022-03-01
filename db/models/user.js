@@ -21,10 +21,15 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         primaryKey: true,
       },
-      username: DataTypes.TEXT,
+      username: {
+        type: DataTypes.TEXT,
+        unique: true,
+        allowNull: false
+      },
       email: {
         type: DataTypes.TEXT,
-        unique: true
+        unique: true,
+        allowNull: false
       },
       password: DataTypes.TEXT,
     },

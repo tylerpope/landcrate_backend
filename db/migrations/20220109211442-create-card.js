@@ -136,10 +136,6 @@ module.exports = {
         type: Sequelize.TEXT,
       },
     });
-    await queryInterface.addConstraint("Cards", {
-      fields: ["id"],
-      type: "unique",
-    });
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable("Cards");

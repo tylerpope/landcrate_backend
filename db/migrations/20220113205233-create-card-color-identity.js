@@ -2,17 +2,13 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable("CardColorIdentities", {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER,
-      },
       cardId: {
         type: Sequelize.UUID,
+        primaryKey: true,
       },
       color: {
         type: Sequelize.TEXT,
+        primaryKey: true,
       },
       createdAt: {
         allowNull: false,
@@ -22,10 +18,6 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
       },
-    });
-    await queryInterface.addConstraint("CardColorIdentities", {
-      fields: ["cardId", "color"],
-      type: "unique",
     });
   },
   down: async (queryInterface, Sequelize) => {

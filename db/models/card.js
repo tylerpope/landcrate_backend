@@ -15,7 +15,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "cardId",
       });
       this.hasMany(models.CardPrice, { as: "prices", foreignKey: "cardId" });
-      this.hasMany(models.UserCard, { as: "cards", foreignKey: "cardId" });
     }
   }
   Card.init(

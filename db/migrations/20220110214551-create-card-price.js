@@ -6,21 +6,18 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         type: Sequelize.INTEGER,
-        primaryKey: true,
       },
       cardId: {
         type: Sequelize.UUID,
+        primaryKey: true,
       },
       price: {
         type: Sequelize.FLOAT,
       },
       type: {
         type: Sequelize.ENUM("FOIL", "NON-FOIL", "ETCHED"),
+        primaryKey: true,
       },
-    });
-    await queryInterface.addConstraint("CardPrices", {
-      fields: ["cardId", "type"],
-      type: "unique",
     });
   },
   down: async (queryInterface, Sequelize) => {

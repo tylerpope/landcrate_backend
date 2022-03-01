@@ -10,12 +10,17 @@ module.exports = {
       },
       username: {
         type: Sequelize.TEXT,
+        unique: true,
+        allowNull: false
       },
       email: {
         type: Sequelize.TEXT,
+        unique: true,
+        allowNull: false,
       },
       password: {
         type: Sequelize.TEXT,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
@@ -25,10 +30,6 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
       },
-    });
-    await queryInterface.addConstraint("Users", {
-      fields: ["email"],
-      type: "unique",
     });
   },
   down: async (queryInterface, Sequelize) => {

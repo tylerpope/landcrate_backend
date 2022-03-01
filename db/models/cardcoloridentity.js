@@ -17,12 +17,10 @@ module.exports = (sequelize, DataTypes) => {
       cardId: {
         type: DataTypes.UUID,
         primaryKey: true,
-        unique: true,
       },
       color: {
         type: DataTypes.TEXT,
         primaryKey: true,
-        unique: true,
       },
     },
     {
