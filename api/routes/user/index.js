@@ -1,37 +1,15 @@
-const express = require("express");
+const express = require('express');
+
 const router = express.Router();
-const passport = require("passport");
-const db = require("../../../db/models");
+const passport = require('passport');
+const db = require('../../../db/models');
 
 router.get(
-  "/collection",
-  passport.authenticate("jwt", { session: false }),
+  '/',
+  passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
-    try {
-      const userId = req.user.id;
-      const cards = await db.UserCard.findAll({
-        where: { userId },
-        include: {
-          model: db.Card,
-          include: [
-            {
-              model: db.CardColor,
-              as: "colors",
-              attributes: ["color"],
-            },
-            {
-              model: db.CardColorIdentity,
-              as: "coloridentities",
-              attributes: ["color"],
-            },
-          ],
-        },
-      });
-      res.status(200).send(cards);
-    } catch (error) {
-      return next(error);
-    }
-  }
+    res.send('tset');
+  },
 );
 
 module.exports = router;

@@ -1,7 +1,7 @@
-'use strict';
 const {
-  Model
+  Model,
 } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class CollectionCard extends Model {
     /**
@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsTo(models.Collection, { foreignKey: 'collectionId' });
+      this.belongsTo(models.Card, { foreignKey: 'cardId' });
     }
   }
   CollectionCard.init({
@@ -20,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     collectionId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
     priceId: {
       type: DataTypes.INTEGER,
@@ -28,10 +30,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     quantity: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
     type: {
-      type: DataTypes.ENUM("FOIL", "NON-FOIL", "ETCHED"),
+      type: DataTypes.ENUM('FOIL', 'NON-FOIL', 'ETCHED'),
     },
   }, {
     sequelize,

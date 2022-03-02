@@ -1,5 +1,5 @@
-"use strict";
-const { Model } = require("sequelize");
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class CardPrice extends Model {
     /**
@@ -9,7 +9,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.Card, { foreignKey: "cardId" });
     }
   }
   CardPrice.init(
@@ -24,16 +23,16 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
       },
       type: {
-        type: DataTypes.ENUM("FOIL", "NON-FOIL", "ETCHED"),
+        type: DataTypes.ENUM('FOIL', 'NON-FOIL', 'ETCHED'),
         primaryKey: true,
       },
       price: DataTypes.FLOAT,
     },
     {
       sequelize,
-      modelName: "CardPrice",
+      modelName: 'CardPrice',
       timestamps: false,
-    }
+    },
   );
   return CardPrice;
 };

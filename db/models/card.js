@@ -1,5 +1,5 @@
-"use strict";
-const { Model } = require("sequelize");
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Card extends Model {
     /**
@@ -9,12 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasMany(models.CardColor, { as: "colors", foreignKey: "cardId" });
-      this.hasMany(models.CardColorIdentity, {
-        as: "coloridentities",
-        foreignKey: "cardId",
-      });
-      this.hasMany(models.CardPrice, { as: "prices", foreignKey: "cardId" });
+      this.hasMany(models.CollectionCard, { foreignKey: 'cardId' });
     }
   }
   Card.init(
@@ -51,11 +46,11 @@ module.exports = (sequelize, DataTypes) => {
       artist: DataTypes.TEXT,
       imageUris: DataTypes.JSON,
       borderColor: DataTypes.ENUM(
-        "black",
-        "white",
-        "borderless",
-        "silver",
-        "gold"
+        'black',
+        'white',
+        'borderless',
+        'silver',
+        'gold',
       ),
       cardBackId: DataTypes.UUID,
       collectorNumber: DataTypes.TEXT,
@@ -75,9 +70,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Card",
+      modelName: 'Card',
       timestamps: false,
-    }
+    },
   );
   return Card;
 };

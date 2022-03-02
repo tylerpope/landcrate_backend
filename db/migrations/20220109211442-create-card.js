@@ -1,7 +1,6 @@
-"use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("Cards", {
+    await queryInterface.createTable('Cards', {
       id: {
         type: Sequelize.UUID,
         primaryKey: true,
@@ -85,7 +84,7 @@ module.exports = {
         type: Sequelize.JSON,
       },
       borderColor: {
-        type: Sequelize.ENUM("black", "white", "borderless", "silver", "gold"),
+        type: Sequelize.ENUM('black', 'white', 'borderless', 'silver', 'gold'),
       },
       cardBackId: {
         type: Sequelize.UUID,
@@ -138,6 +137,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("Cards");
+    await queryInterface.dropTable('Cards');
   },
 };

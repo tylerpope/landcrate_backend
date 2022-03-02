@@ -1,4 +1,3 @@
-'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('CollectionCards', {
@@ -6,7 +5,7 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       cardId: {
         type: Sequelize.UUID,
@@ -25,24 +24,24 @@ module.exports = {
         allowNull: false,
       },
       type: {
-        type: Sequelize.ENUM("FOIL", "NON-FOIL", "ETCHED"),
+        type: Sequelize.ENUM('FOIL', 'NON-FOIL', 'ETCHED'),
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
-    await queryInterface.addConstraint("CollectionCards", {
-      fields: ["cardId", "type"],
-      type: "unique",
-      name: "collectionCard_id_type"
+    await queryInterface.addConstraint('CollectionCards', {
+      fields: ['cardId', 'type'],
+      type: 'unique',
+      name: 'collectionCard_id_type',
     });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('CollectionCards');
-  }
+  },
 };

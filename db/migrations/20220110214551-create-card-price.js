@@ -1,7 +1,6 @@
-"use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("CardPrices", {
+    await queryInterface.createTable('CardPrices', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -15,12 +14,12 @@ module.exports = {
         type: Sequelize.FLOAT,
       },
       type: {
-        type: Sequelize.ENUM("FOIL", "NON-FOIL", "ETCHED"),
+        type: Sequelize.ENUM('FOIL', 'NON-FOIL', 'ETCHED'),
         primaryKey: true,
       },
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("CardPrices");
+    await queryInterface.dropTable('CardPrices');
   },
 };

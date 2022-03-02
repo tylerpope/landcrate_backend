@@ -1,9 +1,10 @@
-const StreamArray = require("stream-json/streamers/StreamArray");
-const { Writable } = require("stream");
-const fs = require("fs");
+const StreamArray = require('stream-json/streamers/StreamArray');
+const { Writable } = require('stream');
+const fs = require('fs');
 
-const db = require("./models");
-const filePath = "./cards.json";
+const db = require('./models');
+
+const filePath = './cards.json';
 
 const createCards = async (model, value) => {
   try {
@@ -66,7 +67,7 @@ const createCardColor = async (model, value) => {
         value.colors.forEach((color, index) => {
           model.upsert({
             cardId: value.id,
-            color: color,
+            color,
           });
           if (index === value.colors.length - 1) {
             resolve();
@@ -86,17 +87,17 @@ const createPrices = async (model, value = {}) => {
     await new Promise((resolve, reject) => {
       if (value.prices && Object.entries(value.prices).length) {
         Object.entries(value.prices).forEach(([type, price], index) => {
-          if (type === "usd" || type === "usd_foil" || type === "usd_etched") {
+          if (type === 'usd' || type === 'usd_foil' || type === 'usd_etched') {
             let typeval;
             switch (type) {
-              case "usd_foil":
-                typeval = "FOIL";
+              case 'usd_foil':
+                typeval = 'FOIL';
                 break;
-              case "usd_etched":
-                typeval = "ETCHED";
+              case 'usd_etched':
+                typeval = 'ETCHED';
                 break;
               default:
-                typeval = "NON-FOIL";
+                typeval = 'NON-FOIL';
                 break;
             }
             if (price) {
@@ -127,7 +128,7 @@ const createCardColorIdentity = async (model, value = {}) => {
         value.color_identity.forEach((color, index) => {
           model.upsert({
             cardId: value.id,
-            color: color,
+            color,
           });
           if (index === value.color_identity.length - 1) {
             resolve();
@@ -163,16 +164,16 @@ const syncAll = () => {
       };
       syncData();
     },
-    //Don't skip this, as we need to operate with objects, not buffers
+    // Don't skip this, as we need to operate with objects, not buffers
     objectMode: true,
   });
 
-  //Pipe the streams as follows
+  // Pipe the streams as follows
   fileStream.pipe(jsonStream.input);
   jsonStream.pipe(processingStream);
 
-  //So we're waiting for the 'finish' event when everything is done.
-  processingStream.on("finish", () => console.log("All done"));
+  // So we're waiting for the 'finish' event when everything is done.
+  processingStream.on('finish', () => console.log('All done'));
 };
 
 const syncPrices = () => {
@@ -189,16 +190,16 @@ const syncPrices = () => {
       };
       syncData();
     },
-    //Don't skip this, as we need to operate with objects, not buffers
+    // Don't skip this, as we need to operate with objects, not buffers
     objectMode: true,
   });
 
-  //Pipe the streams as follows
+  // Pipe the streams as follows
   fileStream.pipe(jsonStream.input);
   jsonStream.pipe(processingStream);
 
-  //So we're waiting for the 'finish' event when everything is done.
-  processingStream.on("finish", () => console.log("All done"));
+  // So we're waiting for the 'finish' event when everything is done.
+  processingStream.on('finish', () => console.log('All done'));
 };
 
 syncAll();
