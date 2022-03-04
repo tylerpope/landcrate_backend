@@ -35,7 +35,6 @@ router.post('/signin', async (req, res, next) => {
       if (err || !user) {
         const errorMessage = info.message || err || 'An error occured.';
         return res.status(401).send(errorMessage);
-        res.status(401).send(errorMessage);
       }
       req.login(user, { session: false }, async (error) => {
         if (error) return next(error);

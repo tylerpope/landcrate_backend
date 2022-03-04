@@ -10,7 +10,6 @@ const collection = require('./api/routes/collection');
 require('./services/auth');
 
 app.use(bodyParser.json());
-app.use('/api/test', (req, res) => res.send('test'));
 app.use('/api/auth', auth);
 app.use('/api/user', user);
 app.use('/api/collections', collection);

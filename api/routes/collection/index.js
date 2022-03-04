@@ -13,9 +13,19 @@ router.get(
       const collections = await db.Collection.findAll({
         where: { userId },
         attributes: ['uid', 'name'],
+        include: {
+          model: db.CollectionCard,
+          limit: 1,
+          attributes: ['cardId'],
+          include: {
+            model: db.Card,
+            attributes: ['imageUris'],
+          },
+        },
       });
       res.status(200).send(collections);
     } catch (error) {
+      console.error(error);
       return next(error);
     }
     return next();
