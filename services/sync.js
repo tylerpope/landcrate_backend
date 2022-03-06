@@ -179,7 +179,6 @@ const syncAll = () => {
 const syncPrices = () => {
   const fileStream = fs.createReadStream(filePath);
   const jsonStream = StreamArray.withParser();
-  const startDate = new Date();
 
   const processingStream = new Writable({
     write({ key, value }, encoding, callback) {
@@ -200,12 +199,7 @@ const syncPrices = () => {
   jsonStream.pipe(processingStream);
 
   // So we're waiting for the 'finish' event when everything is done.
-  processingStream.on('finish', () => {
-    const endDate = new Date();
-    console.log(`All done, Total time: ${
-      (endDate.getTime() - startDate.getTime()) / 1000
-    }`);
-  });
+  processingStream.on('finish', () => console.log('All done'));
 };
 
 module.exports = { syncAll, syncPrices };
