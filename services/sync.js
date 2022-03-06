@@ -202,4 +202,4 @@ const syncPrices = () => {
   processingStream.on('finish', () => console.log('All done'));
 };
 
-module.exports = { syncAll, syncPrices };
+syncAll();
