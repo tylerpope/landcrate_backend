@@ -52,9 +52,7 @@ const syncPrices = () => {
   const processingStream = new Writable({
     write({ key, value }, encoding, callback) {
       const syncData = async () => {
-        if (value.prices) {
-          await createPrices(db.CardPrice, value);
-        }
+        await createPrices(db.CardPrice, value);
         callback();
       };
       syncData();
