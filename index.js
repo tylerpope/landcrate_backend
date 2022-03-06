@@ -14,4 +14,4 @@ app.use('/api/auth', auth);
 app.use('/api/user', user);
 app.use('/api/collections', collection);
 
-app.listen(port, () => console.log(`running on ${port}`));
+app.listen(port, () => console.log(`App is running on ${port}`));

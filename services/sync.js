@@ -2,7 +2,7 @@ const StreamArray = require('stream-json/streamers/StreamArray');
 const { Writable } = require('stream');
 const fs = require('fs');
 
-const db = require('./models');
+const db = require('../db/models');
 
 const filePath = './cards.json';
 
@@ -202,4 +202,4 @@ const syncPrices = () => {
   processingStream.on('finish', () => console.log('All done'));
 };
 
-syncAll();
+module.exports = { syncAll, syncPrices };

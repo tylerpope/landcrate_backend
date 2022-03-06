@@ -20,7 +20,8 @@
     "uuid": "^8.3.2"
   },
   "scripts": {
-    "db:sync": "node ./db/sync",
+    "db:sync": "run-func ./services/sync.js syncAll",
+    "db:sync:price": "run-func ./services/sync syncPrices",
     "start": "nodemon index.js"
   },
   "devDependencies": {
