@@ -83,4 +83,22 @@ router.get(
   },
 );
 
+router.post(
+  '/collection/',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res, next) => {
+    try {
+      const { name } = req.body;
+      const userId = req.user.id;
+      const collection = await db.Collection.create({ name, userId });
+
+      res.status(200).send(collection);
+    } catch (error) {
+      console.log(error);
+      return next(error);
+    }
+    return next();
+  },
+);
+
 module.exports = router;

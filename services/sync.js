@@ -176,30 +176,4 @@ const syncAll = () => {
   processingStream.on('finish', () => console.log('All done'));
 };
 
-const syncPrices = () => {
-  const fileStream = fs.createReadStream(filePath);
-  const jsonStream = StreamArray.withParser();
-
-  const processingStream = new Writable({
-    write({ key, value }, encoding, callback) {
-      const syncData = async () => {
-        if (value.prices) {
-          await createPrices(db.CardPrice, value);
-        }
-        callback();
-      };
-      syncData();
-    },
-    // Don't skip this, as we need to operate with objects, not buffers
-    objectMode: true,
-  });
-
-  // Pipe the streams as follows
-  fileStream.pipe(jsonStream.input);
-  jsonStream.pipe(processingStream);
-
-  // So we're waiting for the 'finish' event when everything is done.
-  processingStream.on('finish', () => console.log('All done'));
-};
-
 syncAll();
