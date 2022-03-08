@@ -26,9 +26,20 @@ module.exports = (sequelize, DataTypes) => {
     },
     priceId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
     },
     quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    condition: {
+      type: DataTypes.ENUM('NM', 'SP', 'MP', 'HP'),
+      allowNull: false,
+    },
+    language: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    purchasePrice: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },

@@ -17,14 +17,26 @@ module.exports = {
       },
       priceId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
       },
       quantity: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
+      condition: {
+        type: Sequelize.ENUM('NM', 'SP', 'MP', 'HP'),
+        allowNull: false,
+      },
+      language: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+      purchasePrice: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
       type: {
         type: Sequelize.ENUM('FOIL', 'NON-FOIL', 'ETCHED'),
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -36,7 +48,7 @@ module.exports = {
       },
     });
     await queryInterface.addConstraint('CollectionCards', {
-      fields: ['cardId', 'type'],
+      fields: ['cardId', 'type', 'condition', 'language', 'purchasePrice'],
       type: 'unique',
       name: 'collectionCard_id_type',
     });

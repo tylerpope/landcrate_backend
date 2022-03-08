@@ -39,13 +39,13 @@ router.get(
       const { id } = req.params;
       const collection = await db.Collection.findOne({
         where: { uid: id },
-        attributes: ['uid', 'name'],
+        attributes: ['uid', 'name', 'id'],
         include: {
           model: db.CollectionCard,
           include: {
             model: db.Card,
           },
-          attributes: ['id', 'quantity', 'type'],
+          attributes: ['id', 'quantity', 'type', 'language', 'condition', 'purchasePrice'],
         },
       });
       res.status(200).send(collection);
@@ -95,6 +95,50 @@ router.post(
       res.status(200).send(collection);
     } catch (error) {
       console.log(error);
+      return next(error);
+    }
+    return next();
+  },
+);
+
+router.post(
+  '/collection/card',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res, next) => {
+    try {
+      const {
+        cardId, collectionId, condition, language, purchasePrice, quantity, type,
+      } = req.body;
+      const userId = req.user.id;
+      const collection = await db.Collection.findOne({ where: { id: collectionId } });
+
+      if (!collection || collection.userId !== userId) {
+        return res.status(500).send('An error has occured');
+      }
+      const collectionCard = await db.CollectionCard.findOne({
+        where: {
+          cardId,
+          collectionId,
+          condition,
+          language,
+          purchasePrice,
+          type,
+        },
+      });
+
+      if (collectionCard) {
+        const card = await collectionCard.update(
+          { quantity: +collectionCard.dataValues.quantity + +quantity },
+        );
+        return res.status(200).send(card);
+      }
+
+      const card = await db.CollectionCard.create({
+        cardId, collectionId, condition, language, purchasePrice, quantity, type,
+      });
+
+      res.status(200).send(card);
+    } catch (error) {
       return next(error);
     }
     return next();
