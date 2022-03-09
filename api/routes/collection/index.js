@@ -1,4 +1,5 @@
 const express = require('express');
+const { uniq } = require('lodash');
 
 const router = express.Router();
 const passport = require('passport');
@@ -15,6 +16,7 @@ router.get(
         attributes: [
           db.sequelize.literal('SUM("CollectionCards"."quantity"*"CollectionCards->CardPrice"."price") as totalValue', ''),
           db.sequelize.literal('SUM("CollectionCards"."quantity") as totalCards', ''),
+          [db.sequelize.fn('array_agg', db.sequelize.col('CollectionCards->Card->CardColors"."color')), 'colors'],
           'id',
           'name',
           'uid',
@@ -22,15 +24,37 @@ router.get(
         include: {
           model: db.CollectionCard,
           attributes: [],
-          include: {
-            model: db.CardPrice,
-            attributes: [],
-          },
+          include: [
+            {
+              model: db.CardPrice,
+              attributes: [],
+            },
+            {
+              model: db.Card,
+              attributes: [],
+              include: {
+                model: db.CardColor,
+                attributes: [],
+              },
+            },
+          ],
         },
         raw: true,
         group: ['Collection.id'],
       });
-      res.status(200).send(collections);
+
+      console.log(collections);
+
+      const formattedCollections = collections ? collections.map((collection) => ({
+        id: collection.id,
+        totalValue: collection.totalvalue,
+        totalCards: collection.totalcards,
+        colors: uniq(collection.colors.filter((color) => color)),
+        name: collection.name,
+        uid: collection.uid,
+      })) : [];
+
+      res.status(200).send(formattedCollections);
     } catch (error) {
       return next(error);
     }
