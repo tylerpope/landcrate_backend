@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     purchasePrice: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: false,
     },
     type: {

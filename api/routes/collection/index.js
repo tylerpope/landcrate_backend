@@ -25,7 +25,6 @@ router.get(
       });
       res.status(200).send(collections);
     } catch (error) {
-      console.error(error);
       return next(error);
     }
     return next();
@@ -44,6 +43,9 @@ router.get(
           model: db.CollectionCard,
           include: {
             model: db.Card,
+            include: {
+              model: db.CardPrice,
+            },
           },
           attributes: ['id', 'quantity', 'type', 'language', 'condition', 'purchasePrice'],
         },

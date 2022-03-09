@@ -31,7 +31,7 @@ module.exports = {
         allowNull: false,
       },
       purchasePrice: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.FLOAT,
         allowNull: false,
       },
       type: {
@@ -48,9 +48,9 @@ module.exports = {
       },
     });
     await queryInterface.addConstraint('CollectionCards', {
-      fields: ['cardId', 'type', 'condition', 'language', 'purchasePrice'],
+      fields: ['cardId', 'type', 'condition', 'language', 'purchasePrice', 'collectionId'],
       type: 'unique',
-      name: 'collectionCard_id_type',
+      name: 'CollectionCard_Unique',
     });
   },
   async down(queryInterface, Sequelize) {
