@@ -82,6 +82,45 @@ const createCardColor = async (model, value) => {
   }
 };
 
+const createCardFinishes = async (model, value) => {
+  try {
+    await new Promise((resolve, reject) => {
+      if (value.finishes.length) {
+        value.finishes.forEach((finish, index) => {
+          let standardFinish = '';
+          switch (finish) {
+            case 'foil':
+              standardFinish = 'FOIL';
+              break;
+            case 'nonfoil':
+              standardFinish = 'NONFOIL';
+              break;
+            case 'glossy':
+              standardFinish = 'FOIL';
+              break;
+            case 'etched':
+              standardFinish = 'ETCHED';
+              break;
+            default:
+              break;
+          }
+          model.upsert({
+            cardId: value.id,
+            finish: standardFinish,
+          });
+          if (index === value.finishes.length - 1) {
+            resolve();
+          }
+        });
+      } else {
+        resolve();
+      }
+    });
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 const createPrices = async (model, value = {}) => {
   try {
     await new Promise((resolve, reject) => {
@@ -107,6 +146,8 @@ const createPrices = async (model, value = {}) => {
                 price,
               });
             }
+          } else {
+            resolve();
           }
           if (index === Object.entries(value.prices).length - 1) {
             resolve();
@@ -150,6 +191,7 @@ const syncAll = () => {
   const processingStream = new Writable({
     write({ key, value }, encoding, callback) {
       const syncData = async () => {
+        if (!value.games.includes('paper')) return callback();
         await createCards(db.Card, value);
         if (value.colors) {
           await createCardColor(db.CardColor, value);
@@ -159,6 +201,9 @@ const syncAll = () => {
         }
         if (value.color_identity) {
           await createCardColorIdentity(db.CardColorIdentity, value);
+        }
+        if (value.finishes) {
+          await createCardFinishes(db.CardFinish, value);
         }
         callback();
       };
@@ -174,6 +219,7 @@ const syncAll = () => {
 
   // So we're waiting for the 'finish' event when everything is done.
   processingStream.on('finish', () => console.log('All done'));
+  processingStream.on('error', (error) => console.log(error));
 };
 
 syncAll();

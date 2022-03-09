@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.CollectionCard, { foreignKey: 'cardId' });
       this.hasMany(models.CardPrice, { foreignKey: 'cardId' });
       this.hasMany(models.CardColor, { foreignKey: 'cardId' });
+      this.hasMany(models.CardFinish, { foreignKey: 'cardId' });
     }
   }
   Card.init(

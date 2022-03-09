@@ -43,8 +43,6 @@ router.get(
         group: ['Collection.id'],
       });
 
-      console.log(collections);
-
       const formattedCollections = collections ? collections.map((collection) => ({
         id: collection.id,
         totalValue: collection.totalvalue,
@@ -74,9 +72,6 @@ router.get(
           model: db.CollectionCard,
           include: {
             model: db.Card,
-            include: {
-              model: db.CardPrice,
-            },
           },
           attributes: ['id', 'quantity', 'type', 'language', 'condition', 'purchasePrice'],
         },
@@ -127,7 +122,6 @@ router.post(
 
       res.status(200).send(collection);
     } catch (error) {
-      console.log(error);
       return next(error);
     }
     return next();
@@ -171,6 +165,34 @@ router.post(
       });
 
       res.status(200).send(card);
+    } catch (error) {
+      return next(error);
+    }
+    return next();
+  },
+);
+
+router.delete(
+  '/collection',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res, next) => {
+    try {
+      const { id } = req.query;
+      const userId = req.user.id;
+
+      const collection = await db.Collection.findOne({
+        where: {
+          id,
+          userId,
+        },
+      });
+
+      if (!collection) {
+        return res.status(500).send({ error: 'Something went wrong. Record was not deleted.' });
+      }
+
+      await collection.destroy();
+      res.status(200).send({ message: 'Record was deleted successfully.' });
     } catch (error) {
       return next(error);
     }

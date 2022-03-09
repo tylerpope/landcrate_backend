@@ -11,7 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasMany(models.CollectionCard, { foreignKey: 'collectionId' });
+      this.hasMany(
+        models.CollectionCard,
+        { onDelete: 'CASCADE', hooks: true, foreignKey: 'collectionId' },
+      );
     }
   }
   Collection.init({

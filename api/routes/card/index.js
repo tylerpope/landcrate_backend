@@ -18,11 +18,21 @@ router.get(
             [Op.iLike]: `%${name}%`,
           },
         },
-        include: {
-          model: db.CardPrice,
-        },
+        order: [
+          ['releasedAt', 'DESC'],
+          [db.CardFinish, 'finish', 'DESC'],
+        ],
+        include: [
+          {
+            model: db.CardPrice,
+          },
+          {
+            model: db.CardFinish,
+          },
+        ],
         limit: 15,
       });
+      console.log(cards);
       res.status(200).send(uniqBy(cards, 'dataValues.name'));
     } catch (error) {
       console.error(error);
@@ -44,9 +54,17 @@ router.get(
             [Op.like]: `%${name}%`,
           },
         },
-        include: {
-          model: db.CardPrice,
-        },
+        order: [
+          [db.CardFinish, 'finish', 'DESC'],
+        ],
+        include: [
+          {
+            model: db.CardPrice,
+          },
+          {
+            model: db.CardFinish,
+          },
+        ],
       });
       res.status(200).send(cards);
     } catch (error) {
