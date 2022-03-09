@@ -12,16 +12,23 @@ router.get(
       const userId = req.user.id;
       const collections = await db.Collection.findAll({
         where: { userId },
-        attributes: ['uid', 'name'],
+        attributes: [
+          db.sequelize.literal('SUM("CollectionCards"."quantity"*"CollectionCards->CardPrice"."price") as totalValue', ''),
+          db.sequelize.literal('SUM("CollectionCards"."quantity") as totalCards', ''),
+          'id',
+          'name',
+          'uid',
+        ],
         include: {
           model: db.CollectionCard,
-          limit: 1,
-          attributes: ['cardId'],
+          attributes: [],
           include: {
-            model: db.Card,
-            attributes: ['imageUris'],
+            model: db.CardPrice,
+            attributes: [],
           },
         },
+        raw: true,
+        group: ['Collection.id'],
       });
       res.status(200).send(collections);
     } catch (error) {
@@ -109,7 +116,7 @@ router.post(
   async (req, res, next) => {
     try {
       const {
-        cardId, collectionId, condition, language, purchasePrice, quantity, type,
+        cardId, collectionId, condition, language, purchasePrice, quantity, type, priceId,
       } = req.body;
       const userId = req.user.id;
       const collection = await db.Collection.findOne({ where: { id: collectionId } });
@@ -130,13 +137,13 @@ router.post(
 
       if (collectionCard) {
         const card = await collectionCard.update(
-          { quantity: +collectionCard.dataValues.quantity + +quantity },
+          { quantity: +collectionCard.dataValues.quantity + +quantity, priceId },
         );
         return res.status(200).send(card);
       }
 
       const card = await db.CollectionCard.create({
-        cardId, collectionId, condition, language, purchasePrice, quantity, type,
+        cardId, collectionId, condition, language, purchasePrice, quantity, type, priceId,
       });
 
       res.status(200).send(card);
