@@ -93,7 +93,7 @@ const createCardFinishes = async (model, value) => {
               standardFinish = 'FOIL';
               break;
             case 'nonfoil':
-              standardFinish = 'NONFOIL';
+              standardFinish = 'NON-FOIL';
               break;
             case 'glossy':
               standardFinish = 'FOIL';

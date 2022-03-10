@@ -14,9 +14,18 @@ router.get(
       const collections = await db.Collection.findAll({
         where: { userId },
         attributes: [
-          db.sequelize.literal('SUM("CollectionCards"."quantity"*"CollectionCards->CardPrice"."price") as totalValue', ''),
-          db.sequelize.literal('SUM("CollectionCards"."quantity") as totalCards', ''),
+          db.sequelize.literal('SUM("CollectionCards"."quantity"*"CollectionCards->CardPrice"."price") as totalValue'),
           [db.sequelize.fn('array_agg', db.sequelize.col('CollectionCards->Card->CardColors"."color')), 'colors'],
+          [db.sequelize.fn('array_agg', db.sequelize.col('CollectionCards->Card->CardColors"."color')), 'colors'],
+          [
+            db.sequelize.literal(`(
+                SELECT SUM("CollectionCards"."quantity")
+                FROM "CollectionCards"
+                WHERE
+                    "Collection"."id" = "CollectionCards"."collectionId"
+            )`),
+            'totalCards',
+          ],
           'id',
           'name',
           'uid',
@@ -46,7 +55,7 @@ router.get(
       const formattedCollections = collections ? collections.map((collection) => ({
         id: collection.id,
         totalValue: collection.totalvalue,
-        totalCards: collection.totalcards,
+        totalCards: collection.totalCards,
         colors: uniq(collection.colors.filter((color) => color)),
         name: collection.name,
         uid: collection.uid,
@@ -68,6 +77,9 @@ router.get(
       const collection = await db.Collection.findOne({
         where: { uid: id },
         attributes: ['uid', 'name', 'id'],
+        order: [
+          [{ model: db.CollectionCard }, { model: db.Card }, 'name', 'ASC'],
+        ],
         include: {
           model: db.CollectionCard,
           include: {
@@ -188,7 +200,7 @@ router.delete(
       });
 
       if (!collection) {
-        return res.status(500).send({ error: 'Something went wrong. Record was not deleted.' });
+        return next();
       }
 
       await collection.destroy();

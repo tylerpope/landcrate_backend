@@ -55,6 +55,7 @@ router.get(
           },
         },
         order: [
+          ['releasedAt', 'DESC'],
           [db.CardFinish, 'finish', 'DESC'],
         ],
         include: [
