@@ -1,5 +1,4 @@
 const express = require('express');
-const { uniq } = require('lodash');
 
 const router = express.Router();
 const passport = require('passport');
@@ -14,9 +13,8 @@ router.get(
       const collections = await db.Collection.findAll({
         where: { userId },
         attributes: [
-          db.sequelize.literal('SUM("CollectionCards"."quantity"*"CollectionCards->CardPrice"."price") as totalValue'),
-          [db.sequelize.fn('array_agg', db.sequelize.col('CollectionCards->Card->CardColors"."color')), 'colors'],
-          [db.sequelize.fn('array_agg', db.sequelize.col('CollectionCards->Card->CardColors"."color')), 'colors'],
+          db.sequelize.literal('ROUND(SUM("CollectionCards"."quantity"*"CollectionCards->CardPrice"."price")::numeric, 2) as "totalValue"'),
+          db.sequelize.literal('array_agg(DISTINCT "CollectionCards->Card->CardColors"."color") AS colors'),
           [
             db.sequelize.literal(`(
                 SELECT SUM("CollectionCards"."quantity")
@@ -52,16 +50,7 @@ router.get(
         group: ['Collection.id'],
       });
 
-      const formattedCollections = collections ? collections.map((collection) => ({
-        id: collection.id,
-        totalValue: collection.totalvalue,
-        totalCards: collection.totalCards,
-        colors: uniq(collection.colors.filter((color) => color)),
-        name: collection.name,
-        uid: collection.uid,
-      })) : [];
-
-      res.status(200).send(formattedCollections);
+      res.status(200).send(collections);
     } catch (error) {
       return next(error);
     }
@@ -82,9 +71,13 @@ router.get(
         ],
         include: {
           model: db.CollectionCard,
-          include: {
+          include: [{
             model: db.Card,
-          },
+            attributes: ['imageUris', 'id', 'name'],
+          }, {
+            model: db.CardPrice,
+            attributes: ['price'],
+          }],
           attributes: ['id', 'quantity', 'type', 'language', 'condition', 'purchasePrice'],
         },
       });
