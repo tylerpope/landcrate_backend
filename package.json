@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@sequelize/core": "^7.0.0-alpha.10",
+    "axios": "^0.26.1",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.1",
     "dotenv": "^16.0.0",
@@ -16,6 +17,8 @@
     "passport-local": "^1.0.0",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
+    "request": "^2.88.2",
+    "request-progress": "^3.0.0",
     "sequelize": "^6.12.5",
     "sequelize-cli": "^6.3.0",
     "stream-json": "^1.7.3",

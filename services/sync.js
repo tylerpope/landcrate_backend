@@ -1,10 +1,14 @@
 const StreamArray = require('stream-json/streamers/StreamArray');
 const { Writable } = require('stream');
 const fs = require('fs');
+const axios = require('axios');
+const request = require('request');
+const progress = require('request-progress');
 
 const db = require('../db/models');
 
 const filePath = './cards.json';
+const scryfallBulkEndpoint = 'https://api.scryfall.com/bulk-data';
 
 const createCards = async (model, value) => {
   try {
@@ -82,6 +86,67 @@ const createCardColor = async (model, value) => {
   }
 };
 
+const createPrices = async (model, value = {}) => {
+  try {
+    await new Promise((resolve, reject) => {
+      if (value.prices && Object.entries(value.prices).length) {
+        Object.entries(value.prices).forEach(([type, price], index) => {
+          if (type === 'usd' || type === 'usd_foil' || type === 'usd_etched') {
+            let typeval;
+            switch (type) {
+              case 'usd_foil':
+                typeval = 'FOIL';
+                break;
+              case 'usd_etched':
+                typeval = 'ETCHED';
+                break;
+              default:
+                typeval = 'NON-FOIL';
+                break;
+            }
+            if (price) {
+              model.upsert({
+                cardId: value.id,
+                type: typeval,
+                price,
+              });
+            }
+          }
+          if (index === Object.entries(value.prices).length - 1) {
+            resolve();
+          }
+        });
+      } else {
+        resolve();
+      }
+    });
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const createCardColorIdentity = async (model, value = {}) => {
+  try {
+    await new Promise((resolve, reject) => {
+      if (value.color_identity && value.color_identity.length) {
+        value.color_identity.forEach((color, index) => {
+          model.upsert({
+            cardId: value.id,
+            color,
+          });
+          if (index === value.color_identity.length - 1) {
+            resolve();
+          }
+        });
+      } else {
+        resolve();
+      }
+    });
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 const createCardFinishes = async (model, value) => {
   try {
     await new Promise((resolve, reject) => {
@@ -121,72 +186,12 @@ const createCardFinishes = async (model, value) => {
   }
 };
 
-const createPrices = async (model, value = {}) => {
-  try {
-    await new Promise((resolve, reject) => {
-      if (value.prices && Object.entries(value.prices).length) {
-        Object.entries(value.prices).forEach(([type, price], index) => {
-          if (type === 'usd' || type === 'usd_foil' || type === 'usd_etched') {
-            let typeval;
-            switch (type) {
-              case 'usd_foil':
-                typeval = 'FOIL';
-                break;
-              case 'usd_etched':
-                typeval = 'ETCHED';
-                break;
-              default:
-                typeval = 'NON-FOIL';
-                break;
-            }
-            if (price) {
-              model.upsert({
-                cardId: value.id,
-                type: typeval,
-                price,
-              });
-            }
-          } else {
-            resolve();
-          }
-          if (index === Object.entries(value.prices).length - 1) {
-            resolve();
-          }
-        });
-      } else {
-        resolve();
-      }
-    });
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-const createCardColorIdentity = async (model, value = {}) => {
-  try {
-    await new Promise((resolve, reject) => {
-      if (value.color_identity && value.color_identity.length) {
-        value.color_identity.forEach((color, index) => {
-          model.upsert({
-            cardId: value.id,
-            color,
-          });
-          if (index === value.color_identity.length - 1) {
-            resolve();
-          }
-        });
-      } else {
-        resolve();
-      }
-    });
-  } catch (err) {
-    console.error(err);
-  }
-};
-
 const syncAll = () => {
   const fileStream = fs.createReadStream(filePath);
   const jsonStream = StreamArray.withParser();
+
+  console.log('Writing Data..');
+  const startTime = new Date();
 
   const processingStream = new Writable({
     write({ key, value }, encoding, callback) {
@@ -205,7 +210,9 @@ const syncAll = () => {
         if (value.finishes) {
           await createCardFinishes(db.CardFinish, value);
         }
-        callback();
+        setTimeout(() => {
+          callback();
+        }, 10);
       };
       syncData();
     },
@@ -218,8 +225,43 @@ const syncAll = () => {
   jsonStream.pipe(processingStream);
 
   // So we're waiting for the 'finish' event when everything is done.
-  processingStream.on('finish', () => console.log('All done'));
-  processingStream.on('error', (error) => console.log(error));
+  processingStream.on('finish', () => {
+    const endTime = new Date();
+    let timeDiff = endTime - startTime;
+
+    timeDiff /= 1000;
+
+    console.log(
+      `Done! Total time elapsed ${Math.round(timeDiff / 60)} mintues`,
+    );
+  });
 };
 
+// Download JSON and update SQL database
+const getBulkData = () => axios.get(scryfallBulkEndpoint).then((res = {}) => {
+  const defaultCards = res.data.data.find(
+    (item) => item.type === 'default_cards',
+  );
+
+  if (!defaultCards) {
+    console.error('Could not find all cards object.');
+    return;
+  }
+
+  progress(request(defaultCards.download_uri), {})
+    .on('progress', (state) => {
+      console.log('progress', state);
+    })
+    .on('error', (err) => {
+      console.error(err);
+    })
+    .on('end', () => {
+      // Downloaded file, update database
+      console.log('Finished downloading file.');
+      syncAll();
+    })
+    .pipe(fs.createWriteStream(filePath));
+});
+
+// getBulkData();
 syncAll();
