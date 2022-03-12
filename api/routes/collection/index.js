@@ -2,6 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 const passport = require('passport');
+const { Op } = require('@sequelize/core');
 const db = require('../../../db/models');
 
 router.get(
@@ -63,6 +64,16 @@ router.get(
   async (req, res, next) => {
     try {
       const { id } = req.params;
+      const { name } = req.query;
+      let cardConditions = {};
+      if (name) {
+        cardConditions = {
+          ...cardConditions,
+          name: {
+            [Op.like]: `%${name}%`,
+          },
+        };
+      }
       const collection = await db.Collection.findOne({
         where: { uid: id },
         attributes: ['uid', 'name', 'id'],
@@ -73,6 +84,7 @@ router.get(
           model: db.CollectionCard,
           include: [{
             model: db.Card,
+            where: cardConditions,
             attributes: ['imageUris', 'id', 'name'],
           }, {
             model: db.CardPrice,
@@ -80,6 +92,7 @@ router.get(
           }],
           attributes: ['id', 'quantity', 'type', 'language', 'condition', 'purchasePrice'],
         },
+        limit: 40,
       });
       res.status(200).send(collection);
     } catch (error) {
@@ -182,12 +195,12 @@ router.delete(
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     try {
-      const { id } = req.query;
+      const { uid } = req.query;
       const userId = req.user.id;
 
       const collection = await db.Collection.findOne({
         where: {
-          id,
+          uid,
           userId,
         },
       });
