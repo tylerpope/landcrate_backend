@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 
 const jsonErrorHandler = async (err, req, res, next) => {
-  res.status(500).send({ error: 'Something went wrong. An error has been logged.' });
+  res.status(500).send({ message: 'Something went wrong. An error has been logged.' });
   console.error(err);
 };
 

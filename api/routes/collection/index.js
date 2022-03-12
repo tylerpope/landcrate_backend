@@ -76,12 +76,26 @@ router.get(
       }
       const collection = await db.Collection.findOne({
         where: { uid: id },
-        attributes: ['uid', 'name', 'id'],
-        order: [
-          [{ model: db.CollectionCard }, { model: db.Card }, 'name', 'ASC'],
+        attributes: [
+          'uid',
+          'name',
+          'id',
+          [
+            db.sequelize.literal(`(
+                SELECT COUNT("CollectionCards"."id")
+                FROM "CollectionCards"
+                WHERE
+                    "Collection"."id" = "CollectionCards"."collectionId"
+            )`),
+            'totalCards',
+          ],
         ],
         include: {
           model: db.CollectionCard,
+          separate: true,
+          order: [
+            [{ model: db.Card }, 'name', 'ASC'],
+          ],
           include: [{
             model: db.Card,
             where: cardConditions,
@@ -92,7 +106,6 @@ router.get(
           }],
           attributes: ['id', 'quantity', 'type', 'language', 'condition', 'purchasePrice'],
         },
-        limit: 40,
       });
       res.status(200).send(collection);
     } catch (error) {
