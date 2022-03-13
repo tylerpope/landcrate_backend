@@ -2,16 +2,11 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Collections', {
       id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER,
-      },
-      uid: {
         type: Sequelize.UUID,
         allowNull: false,
         unique: true,
         defaultValue: Sequelize.UUIDV4,
+        primaryKey: true,
       },
       name: {
         type: Sequelize.TEXT,

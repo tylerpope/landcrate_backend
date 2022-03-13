@@ -210,9 +210,10 @@ const syncAll = () => {
         if (value.finishes) {
           await createCardFinishes(db.CardFinish, value);
         }
-        setTimeout(() => {
-          callback();
-        }, 10);
+        // setTimeout(() => {
+        //   callback();
+        // }, 10);
+        callback();
       };
       syncData();
     },

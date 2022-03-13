@@ -18,11 +18,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Collection.init({
-    uid: {
+    id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
       unique: true,
+      primaryKey: true,
     },
     name: {
       type: DataTypes.STRING,

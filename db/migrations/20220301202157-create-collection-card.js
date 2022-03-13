@@ -12,7 +12,7 @@ module.exports = {
         allowNull: false,
       },
       collectionId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
         allowNull: false,
       },
       priceId: {

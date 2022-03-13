@@ -27,7 +27,6 @@ router.get(
           ],
           'id',
           'name',
-          'uid',
         ],
         include: {
           model: db.CollectionCard,
@@ -61,57 +60,61 @@ router.get(
 
 router.get(
   '/collection/:id',
+  passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     try {
       const { id } = req.params;
-      const { name } = req.query;
-      let cardConditions = {};
-      if (name) {
-        cardConditions = {
-          ...cardConditions,
-          name: {
-            [Op.like]: `%${name}%`,
-          },
-        };
-      }
       const collection = await db.Collection.findOne({
-        where: { uid: id },
+        where: { id },
         attributes: [
-          'uid',
           'name',
           'id',
-          [
-            db.sequelize.literal(`(
-                SELECT COUNT("CollectionCards"."id")
-                FROM "CollectionCards"
-                WHERE
-                    "Collection"."id" = "CollectionCards"."collectionId"
-            )`),
-            'totalCards',
-          ],
         ],
-        include: {
-          model: db.CollectionCard,
-          separate: true,
-          order: [
-            [{ model: db.Card }, 'name', 'ASC'],
-          ],
-          include: [{
-            model: db.Card,
-            where: cardConditions,
-            attributes: ['imageUris', 'id', 'name'],
-          }, {
-            model: db.CardPrice,
-            attributes: ['price'],
-          }],
-          attributes: ['id', 'quantity', 'type', 'language', 'condition', 'purchasePrice'],
-        },
       });
       res.status(200).send(collection);
     } catch (error) {
       return next(error);
     }
     return next();
+  },
+);
+
+router.get(
+  '/collection/:id/cards',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res, next) => {
+    const { id } = req.params;
+    const { name, limit = 5, offset = 0 } = req.query;
+    let cardConditions = {};
+    if (name) {
+      cardConditions = {
+        ...cardConditions,
+        name: {
+          [Op.like]: `%${name}%`,
+        },
+      };
+    }
+    try {
+      const collectionCards = await db.CollectionCard.findAndCountAll({
+        where: {
+          collectionId: id,
+        },
+        limit,
+        offset,
+        order: [
+          [{ model: db.Card }, 'name', 'ASC'],
+        ],
+        include: {
+          model: db.Card,
+          where: {
+            ...cardConditions,
+          },
+        },
+      });
+      return res.status(200).send(collectionCards);
+    } catch (error) {
+      return next(error);
+    }
   },
 );
 
@@ -165,7 +168,14 @@ router.post(
   async (req, res, next) => {
     try {
       const {
-        cardId, collectionId, condition, language, purchasePrice, quantity, type, priceId,
+        cardId,
+        collectionId,
+        condition,
+        language,
+        purchasePrice,
+        quantity,
+        type,
+        priceId,
       } = req.body;
       const userId = req.user.id;
       const collection = await db.Collection.findOne({ where: { id: collectionId } });
@@ -208,12 +218,12 @@ router.delete(
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     try {
-      const { uid } = req.query;
+      const { id } = req.query;
       const userId = req.user.id;
 
       const collection = await db.Collection.findOne({
         where: {
-          uid,
+          id,
           userId,
         },
       });
