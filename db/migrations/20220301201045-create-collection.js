@@ -12,6 +12,9 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
+      coverUrl: {
+        type: Sequelize.TEXT,
+      },
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,

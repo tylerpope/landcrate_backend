@@ -27,6 +27,7 @@ router.get(
           ],
           'id',
           'name',
+          'coverUrl',
         ],
         include: {
           model: db.CollectionCard,
@@ -69,6 +70,7 @@ router.get(
         attributes: [
           'name',
           'id',
+          'coverUrl',
         ],
       });
       res.status(200).send(collection);
@@ -104,12 +106,15 @@ router.get(
         order: [
           [{ model: db.Card }, 'name', 'ASC'],
         ],
-        include: {
-          model: db.Card,
-          where: {
-            ...cardConditions,
+        include: [
+          { model: db.CardPrice },
+          {
+            model: db.Card,
+            where: {
+              ...cardConditions,
+            },
           },
-        },
+        ],
       });
       return res.status(200).send(collectionCards);
     } catch (error) {
@@ -166,6 +171,7 @@ router.post(
   '/collection/card',
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
+    const userId = req.user.id;
     try {
       const {
         cardId,
@@ -176,8 +182,8 @@ router.post(
         quantity,
         type,
         priceId,
+        imgUrl,
       } = req.body;
-      const userId = req.user.id;
       const collection = await db.Collection.findOne({ where: { id: collectionId } });
 
       if (!collection || collection.userId !== userId) {
@@ -186,6 +192,7 @@ router.post(
       const collectionCard = await db.CollectionCard.findOne({
         where: {
           cardId,
+          userId,
           collectionId,
           condition,
           language,
@@ -201,8 +208,22 @@ router.post(
         return res.status(200).send(card);
       }
 
+      if (!collection.coverUrl) {
+        await collection.update({
+          coverUrl: imgUrl,
+        });
+      }
+
       const card = await db.CollectionCard.create({
-        cardId, collectionId, condition, language, purchasePrice, quantity, type, priceId,
+        cardId,
+        collectionId,
+        condition,
+        language,
+        purchasePrice,
+        quantity,
+        type,
+        priceId,
+        userId,
       });
 
       res.status(200).send(card);
