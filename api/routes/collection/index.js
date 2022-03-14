@@ -86,7 +86,7 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     const { id } = req.params;
-    const { name, limit = 5, offset = 0 } = req.query;
+    const { name, limit = 50, offset = 0 } = req.query;
     let cardConditions = {};
     if (name) {
       cardConditions = {
@@ -101,7 +101,6 @@ router.get(
         where: {
           collectionId: id,
         },
-        subQuery: false,
         limit,
         offset,
         order: [
@@ -114,7 +113,6 @@ router.get(
             where: {
               ...cardConditions,
             },
-            include: { model: db.CardFinish },
           },
         ],
       });

@@ -32,10 +32,8 @@ router.get(
         ],
         limit: 15,
       });
-      console.log(cards);
       res.status(200).send(uniqBy(cards, 'dataValues.name'));
     } catch (error) {
-      console.error(error);
       return next(error);
     }
     return next();
@@ -68,6 +66,26 @@ router.get(
         ],
       });
       res.status(200).send(cards);
+    } catch (error) {
+      return next(error);
+    }
+    return next();
+  },
+);
+
+router.get(
+  '/card/:id/finishes',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const finishes = await db.CardFinish.findAll({
+        where: {
+          cardId: id,
+        },
+        attributes: ['finish'],
+      });
+      res.status(200).send(finishes);
     } catch (error) {
       return next(error);
     }
