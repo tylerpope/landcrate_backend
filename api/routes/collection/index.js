@@ -101,6 +101,7 @@ router.get(
         where: {
           collectionId: id,
         },
+        subQuery: false,
         limit,
         offset,
         order: [
@@ -113,6 +114,7 @@ router.get(
             where: {
               ...cardConditions,
             },
+            include: { model: db.CardFinish },
           },
         ],
       });
