@@ -49,7 +49,7 @@ router.get(
       const cards = await db.Card.findAll({
         where: {
           name: {
-            [Op.like]: `%${name}%`,
+            [Op.iLike]: `%${name}%`,
           },
         },
         order: [

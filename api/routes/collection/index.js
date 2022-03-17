@@ -92,7 +92,7 @@ router.get(
       cardConditions = {
         ...cardConditions,
         name: {
-          [Op.like]: `%${name}%`,
+          [Op.iLike]: `%${name}%`,
         },
       };
     }
