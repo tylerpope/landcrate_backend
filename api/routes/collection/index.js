@@ -157,9 +157,8 @@ router.get(
     try {
       const userId = req.user.id;
       const { name, limit = 50, offset = 0 } = req.query;
-      let conditions = {
-        userId,
-      };
+      let conditions = {};
+
       if (name) {
         conditions = {
           ...conditions,
@@ -170,14 +169,14 @@ router.get(
       }
       const allCards = await db.CollectionCard.findAndCountAll(
         {
-          where: conditions,
+          where: { userId },
           limit,
           offset,
           order: [
             [{ model: db.Card }, 'name', 'ASC'],
           ],
           include: [
-            { model: db.Card },
+            { model: db.Card, where: conditions },
             { model: db.CardPrice },
           ],
         },
