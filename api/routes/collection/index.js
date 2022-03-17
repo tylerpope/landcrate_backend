@@ -150,6 +150,46 @@ router.get(
   },
 );
 
+router.get(
+  '/all/cards',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res, next) => {
+    try {
+      const userId = req.user.id;
+      const { name, limit = 50, offset = 0 } = req.query;
+      let conditions = {
+        userId,
+      };
+      if (name) {
+        conditions = {
+          ...conditions,
+          name: {
+            [Op.iLike]: `%${name}%`,
+          },
+        };
+      }
+      const allCards = await db.CollectionCard.findAndCountAll(
+        {
+          where: conditions,
+          limit,
+          offset,
+          order: [
+            [{ model: db.Card }, 'name', 'ASC'],
+          ],
+          include: [
+            { model: db.Card },
+            { model: db.CardPrice },
+          ],
+        },
+      );
+      res.status(200).send(allCards);
+    } catch (error) {
+      return next(error);
+    }
+    return next();
+  },
+);
+
 router.post(
   '/collection/',
   passport.authenticate('jwt', { session: false }),
