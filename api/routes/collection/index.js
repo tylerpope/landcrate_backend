@@ -175,9 +175,17 @@ router.get(
           order: [
             [{ model: db.Card }, 'name', 'ASC'],
           ],
+          attributes: ['id', 'quantity', 'type'],
           include: [
             { model: db.Card, where: conditions },
-            { model: db.CardPrice },
+            { model: db.CardPrice, attributes: ['price'] },
+            {
+              model: db.Collection,
+              attributes: [
+                'name',
+                'id',
+              ],
+            },
           ],
         },
       );

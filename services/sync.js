@@ -197,6 +197,7 @@ const syncAll = () => {
     write({ key, value }, encoding, callback) {
       const syncData = async () => {
         if (!value.games.includes('paper')) return callback();
+        if (value.layout === 'art_series') return callback();
         await createCards(db.Card, value);
         if (value.colors) {
           await createCardColor(db.CardColor, value);
