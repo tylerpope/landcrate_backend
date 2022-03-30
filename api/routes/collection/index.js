@@ -86,7 +86,9 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     const { id } = req.params;
-    const { name, limit = 50, offset = 0 } = req.query;
+    const {
+      name, limit = 50, offset = 0, order = 'ASC',
+    } = req.query;
     let cardConditions = {};
     if (name) {
       cardConditions = {
@@ -104,7 +106,7 @@ router.get(
         limit,
         offset,
         order: [
-          [{ model: db.Card }, 'name', 'ASC'],
+          [{ model: db.Card }, 'name', order],
         ],
         include: [
           { model: db.CardPrice },
@@ -156,7 +158,9 @@ router.get(
   async (req, res, next) => {
     try {
       const userId = req.user.id;
-      const { name, limit = 50, offset = 0 } = req.query;
+      const {
+        name, limit = 50, offset = 0, order = 'ASC',
+      } = req.query;
       let conditions = {};
 
       if (name) {
@@ -173,7 +177,7 @@ router.get(
           limit,
           offset,
           order: [
-            [{ model: db.Card }, 'name', 'ASC'],
+            [{ model: db.Card }, 'name', order],
           ],
           attributes: ['id', 'quantity', 'type'],
           include: [
