@@ -179,7 +179,7 @@ router.get(
           order: [
             [{ model: db.Card }, 'name', order],
           ],
-          attributes: ['id', 'quantity', 'type'],
+          attributes: ['id', 'quantity', 'type', 'condition', 'language', 'purchasePrice', 'collectionId'],
           include: [
             { model: db.Card, where: conditions },
             { model: db.CardPrice, attributes: ['price'] },
@@ -235,6 +235,7 @@ router.post(
         priceId,
         imgUrl,
       } = req.body;
+
       const collection = await db.Collection.findOne({ where: { id: collectionId } });
 
       if (!collection || collection.userId !== userId) {
@@ -285,6 +286,76 @@ router.post(
   },
 );
 
+router.put(
+  '/collection/card',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res, next) => {
+    try {
+      const userId = req.user.id;
+      const {
+        cardId,
+        collectionId,
+        condition,
+        language,
+        purchasePrice,
+        quantity,
+        type,
+        id,
+      } = req.body;
+
+      const card = await db.CollectionCard.findOne({
+        where: {
+          userId,
+          id,
+        },
+      });
+
+      if (!card) return res.status(404).send('Card Not Found');
+
+      const updatedCard = await card.update({
+        cardId,
+        collectionId,
+        condition,
+        language,
+        purchasePrice,
+        quantity,
+        type,
+      });
+
+      res.status(200).send(updatedCard);
+    } catch (err) {
+      return next(err);
+    }
+    return next();
+  },
+);
+
+router.delete(
+  '/collection/card',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res, next) => {
+    try {
+      const { id } = req.query;
+      const userId = req.user.id;
+
+      const collectionCard = await db.CollectionCard.findOne({
+        where: {
+          id,
+          userId,
+        },
+      });
+
+      if (!collectionCard) return res.status(404).send('Collection card not found!');
+
+      await collectionCard.destroy();
+      res.status(200).send({ message: 'Collection card was deleted successfully.' });
+    } catch (error) {
+      return next(error);
+    }
+    return next();
+  },
+);
+
 router.delete(
   '/collection',
   passport.authenticate('jwt', { session: false }),
@@ -301,11 +372,11 @@ router.delete(
       });
 
       if (!collection) {
-        return next();
+        return res.status(404).send('Collection not found!');
       }
 
       await collection.destroy();
-      res.status(200).send({ message: 'Record was deleted successfully.' });
+      res.status(200).send({ message: 'Collection was deleted successfully.' });
     } catch (error) {
       return next(error);
     }
