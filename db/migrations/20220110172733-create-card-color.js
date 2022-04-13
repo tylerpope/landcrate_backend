@@ -2,16 +2,16 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('CardColors', {
       cardId: {
-        type: Sequelize.UUID,
+        type: Sequelize.DataTypes.UUID,
         primaryKey: true,
       },
       color: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.STRING,
         primaryKey: true,
       },
     });
   },
-  down: async (queryInterface, Sequelize) => {
+  down: async (queryInterface) => {
     await queryInterface.dropTable('CardColors');
   },
 };

@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
+    static associate() {
       // define association here
     }
   }
@@ -21,23 +21,25 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
       },
       email: {
-        type: DataTypes.TEXT,
+        type: DataTypes.CITEXT,
         unique: true,
         allowNull: false,
       },
-      password: DataTypes.TEXT,
+      password: DataTypes.STRING,
     },
     {
       sequelize,
       modelName: 'User',
       hooks: {
-        beforeSave: async (user, options) => {
+        beforeSave: async (user) => {
+          // eslint-disable-next-line no-param-reassign
           user.password = await bcrypt.hash(user.password, 10);
         },
       },
     },
   );
 
+  // eslint-disable-next-line func-names
   User.prototype.isValidPassword = async function (password) {
     const user = this;
     const compare = await bcrypt.compare(password, user.password);

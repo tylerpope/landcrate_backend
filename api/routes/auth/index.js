@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 
 router.post('/signup', async (req, res, next) => {
-  passport.authenticate('signup', { session: false }, async (err, user, info = {}) => {
+  passport.authenticate('signup', { session: false }, async (err) => {
     try {
       if (err) {
         const errorMessage = err && err.errors[0] && err.errors[0].message === 'email must be unique' ? 'Email already registered' : 'An error has occured';
@@ -19,6 +19,7 @@ router.post('/signup', async (req, res, next) => {
 });
 
 router.post('/signin', async (req, res, next) => {
+  // eslint-disable-next-line consistent-return
   passport.authenticate('login', async (err, user, info = {}) => {
     try {
       if (err || !user) {

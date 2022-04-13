@@ -5,8 +5,12 @@ const passport = require('passport');
 const { Op } = require('@sequelize/core');
 const db = require('../../../db/models');
 
+/*
+  GET /api/collections/
+  Get all collections for user
+*/
 router.get(
-  '/all',
+  '/',
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     try {
@@ -59,8 +63,12 @@ router.get(
   },
 );
 
+/*
+  GET /api/collections/:id
+  Get single collection for user
+*/
 router.get(
-  '/collection/:id',
+  '/:id',
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     try {
@@ -81,8 +89,12 @@ router.get(
   },
 );
 
+/*
+  GET /api/collections/:id/cards
+  Get all card for collection for user
+*/
 router.get(
-  '/collection/:id/cards',
+  '/:id/cards',
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     const { id } = req.params;
@@ -125,35 +137,12 @@ router.get(
   },
 );
 
+/*
+  GET /api/collections/cards
+  Get all cards for all collections for user
+*/
 router.get(
-  '/cards/all',
-  passport.authenticate('jwt', { session: false }),
-  async (req, res, next) => {
-    try {
-      const userId = req.user.id;
-      const cards = await db.CollectionCard.findAll({
-        include: [{
-          model: db.Collection,
-          where: {
-            userId,
-          },
-          attributes: ['name'],
-        }, {
-          model: db.Card,
-          attributes: ['name'],
-        }],
-        attributes: ['id', 'type'],
-      });
-      res.status(200).send(cards);
-    } catch (error) {
-      return next(error);
-    }
-    return next();
-  },
-);
-
-router.get(
-  '/all/cards',
+  '/cards',
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     try {
@@ -201,6 +190,10 @@ router.get(
   },
 );
 
+/*
+  POST /api/collections/collection
+  Create collection for user
+*/
 router.post(
   '/collection/',
   passport.authenticate('jwt', { session: false }),
@@ -218,6 +211,10 @@ router.post(
   },
 );
 
+/*
+  POST /api/collections/card
+  Create collection card for user
+*/
 router.post(
   '/collection/card',
   passport.authenticate('jwt', { session: false }),
@@ -225,15 +222,7 @@ router.post(
     const userId = req.user.id;
     try {
       const {
-        cardId,
-        collectionId,
-        condition,
-        language,
-        purchasePrice,
-        quantity,
-        type,
-        priceId,
-        imgUrl,
+        cardId, collectionId, condition, language, purchasePrice, quantity, type, priceId, imgUrl,
       } = req.body;
 
       const collection = await db.Collection.findOne({ where: { id: collectionId } });
@@ -243,13 +232,7 @@ router.post(
       }
       const collectionCard = await db.CollectionCard.findOne({
         where: {
-          cardId,
-          userId,
-          collectionId,
-          condition,
-          language,
-          purchasePrice,
-          type,
+          cardId, userId, collectionId, condition, language, purchasePrice, type,
         },
       });
 
@@ -267,15 +250,7 @@ router.post(
       }
 
       const card = await db.CollectionCard.create({
-        cardId,
-        collectionId,
-        condition,
-        language,
-        purchasePrice,
-        quantity,
-        type,
-        priceId,
-        userId,
+        cardId, collectionId, condition, language, purchasePrice, quantity, type, priceId, userId,
       });
 
       res.status(200).send(card);
@@ -286,6 +261,10 @@ router.post(
   },
 );
 
+/*
+  PUT /api/collections/collection/card
+  Update collection card for user
+*/
 router.put(
   '/collection/card',
   passport.authenticate('jwt', { session: false }),
@@ -330,6 +309,10 @@ router.put(
   },
 );
 
+/*
+  DELETE /api/collections/collection/card
+  Delete collection card for user
+*/
 router.delete(
   '/collection/card',
   passport.authenticate('jwt', { session: false }),
@@ -356,12 +339,16 @@ router.delete(
   },
 );
 
+/*
+  DELETE /api/collections/collection
+  Delete collection card for user
+*/
 router.delete(
-  '/collection',
+  '/collection/:id',
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     try {
-      const { id } = req.query;
+      const { id } = req.params;
       const userId = req.user.id;
 
       const collection = await db.Collection.findOne({

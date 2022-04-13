@@ -26,11 +26,11 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
     },
     name: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     coverUrl: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
     },
     userId: {
       type: DataTypes.INTEGER,

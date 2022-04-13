@@ -5,28 +5,28 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.DataTypes.INTEGER,
       },
       email: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.CITEXT,
         unique: true,
         allowNull: false,
       },
       password: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.STRING,
         allowNull: false,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DataTypes.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DataTypes.DATE,
       },
     });
   },
-  down: async (queryInterface, Sequelize) => {
+  down: async (queryInterface) => {
     await queryInterface.dropTable('Users');
   },
 };

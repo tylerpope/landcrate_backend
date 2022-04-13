@@ -8,7 +8,7 @@ router.get(
   '/',
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
-    res.send('tset');
+    res.send('test');
   },
 );
 

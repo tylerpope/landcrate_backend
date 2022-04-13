@@ -6,6 +6,10 @@ const router = express.Router();
 const passport = require('passport');
 const db = require('../../../db/models');
 
+/*
+  GET /api/cards/
+  Get all cards
+*/
 router.get(
   '/',
   passport.authenticate('jwt', { session: false }),
@@ -40,12 +44,16 @@ router.get(
   },
 );
 
+/*
+  GET /api/cards/card/:name
+  Get card by name
+*/
 router.get(
-  '/card',
+  '/card/:name',
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     try {
-      const name = req.query.name || '';
+      const { name } = req.params;
       const cards = await db.Card.findAll({
         where: {
           name: {
@@ -66,26 +74,6 @@ router.get(
         ],
       });
       res.status(200).send(cards);
-    } catch (error) {
-      return next(error);
-    }
-    return next();
-  },
-);
-
-router.get(
-  '/card/:id/finishes',
-  passport.authenticate('jwt', { session: false }),
-  async (req, res, next) => {
-    try {
-      const { id } = req.params;
-      const finishes = await db.CardFinish.findAll({
-        where: {
-          cardId: id,
-        },
-        attributes: ['finish'],
-      });
-      res.status(200).send(finishes);
     } catch (error) {
       return next(error);
     }

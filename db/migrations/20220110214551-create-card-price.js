@@ -4,22 +4,22 @@ module.exports = {
       id: {
         allowNull: false,
         autoIncrement: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.DataTypes.INTEGER,
       },
       cardId: {
-        type: Sequelize.UUID,
+        type: Sequelize.DataTypes.UUID,
         primaryKey: true,
       },
       price: {
-        type: Sequelize.FLOAT,
+        type: Sequelize.DataTypes.FLOAT,
       },
       type: {
-        type: Sequelize.ENUM('FOIL', 'NON-FOIL', 'ETCHED'),
+        type: Sequelize.DataTypes.ENUM('FOIL', 'NON-FOIL', 'ETCHED'),
         primaryKey: true,
       },
     });
   },
-  down: async (queryInterface, Sequelize) => {
+  down: async (queryInterface) => {
     await queryInterface.dropTable('CardPrices');
   },
 };

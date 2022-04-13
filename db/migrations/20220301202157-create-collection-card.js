@@ -5,50 +5,50 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.DataTypes.INTEGER,
       },
       cardId: {
-        type: Sequelize.UUID,
+        type: Sequelize.DataTypes.UUID,
         allowNull: false,
       },
       collectionId: {
-        type: Sequelize.UUID,
+        type: Sequelize.DataTypes.UUID,
         allowNull: false,
       },
       userId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DataTypes.INTEGER,
         allowNull: false,
       },
       priceId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DataTypes.INTEGER,
       },
       quantity: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DataTypes.INTEGER,
         allowNull: false,
       },
       condition: {
-        type: Sequelize.ENUM('NM', 'SP', 'MP', 'HP'),
+        type: Sequelize.DataTypes.ENUM('NM', 'SP', 'MP', 'HP'),
         allowNull: false,
       },
       language: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.STRING,
         allowNull: false,
       },
       purchasePrice: {
-        type: Sequelize.FLOAT,
+        type: Sequelize.DataTypes.FLOAT,
         allowNull: false,
       },
       type: {
-        type: Sequelize.ENUM('FOIL', 'NON-FOIL', 'ETCHED'),
+        type: Sequelize.DataTypes.ENUM('FOIL', 'NON-FOIL', 'ETCHED'),
         allowNull: false,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DataTypes.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DataTypes.DATE,
       },
     });
     await queryInterface.addConstraint('CollectionCards', {
@@ -57,7 +57,7 @@ module.exports = {
       name: 'CollectionCard_Unique',
     });
   },
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.dropTable('CollectionCards');
   },
 };

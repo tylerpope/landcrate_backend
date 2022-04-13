@@ -2,141 +2,141 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('Cards', {
       id: {
-        type: Sequelize.UUID,
+        type: Sequelize.DataTypes.UUID,
         primaryKey: true,
       },
       arenaId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DataTypes.INTEGER,
       },
       lang: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       mtgoId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DataTypes.INTEGER,
       },
       mtgoFoilId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DataTypes.INTEGER,
       },
       tcgPlayerId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DataTypes.INTEGER,
       },
       tcgPlayerEtchedId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DataTypes.INTEGER,
       },
       cardmarketId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DataTypes.INTEGER,
       },
       oracleUUID: {
-        type: Sequelize.UUID,
+        type: Sequelize.DataTypes.UUID,
       },
       printsSearchUri: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       rulingsUri: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       scryfallUri: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       cardFaces: {
-        type: Sequelize.JSON,
+        type: Sequelize.DataTypes.JSON,
       },
       convertedManaCost: {
-        type: Sequelize.FLOAT,
+        type: Sequelize.DataTypes.FLOAT,
       },
       edhrecRank: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DataTypes.INTEGER,
       },
       handModifier: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       layout: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       lifeModifier: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       loyalty: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       manaCost: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       name: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       oracleText: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       power: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       toughness: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       typeLine: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       artist: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       imageUris: {
-        type: Sequelize.JSON,
+        type: Sequelize.DataTypes.JSON,
       },
       borderColor: {
-        type: Sequelize.ENUM('black', 'white', 'borderless', 'silver', 'gold'),
+        type: Sequelize.DataTypes.ENUM('black', 'white', 'borderless', 'silver', 'gold'),
       },
       cardBackId: {
-        type: Sequelize.UUID,
+        type: Sequelize.DataTypes.UUID,
       },
       collectorNumber: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       flavorName: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       flavorText: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       frame: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       illustrationId: {
-        type: Sequelize.UUID,
+        type: Sequelize.DataTypes.UUID,
       },
       imageStatus: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       printedName: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       printedText: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       printedTypeLine: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       purchaseUris: {
-        type: Sequelize.JSON,
+        type: Sequelize.DataTypes.JSON,
       },
       rarity: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       releasedAt: {
-        type: Sequelize.DATE,
+        type: Sequelize.DataTypes.DATE,
       },
       setCode: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       setId: {
-        type: Sequelize.UUID,
+        type: Sequelize.DataTypes.UUID,
       },
       setName: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
     });
   },
-  down: async (queryInterface, Sequelize) => {
+  down: async (queryInterface) => {
     await queryInterface.dropTable('Cards');
   },
 };

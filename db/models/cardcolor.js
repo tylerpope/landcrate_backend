@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
       },
       color: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
         primaryKey: true,
       },
     },
