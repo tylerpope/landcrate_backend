@@ -17,6 +17,7 @@ router.get(
       const userId = req.user.id;
       const collections = await db.Collection.findAll({
         where: { userId },
+        order: [['name', 'ASC']],
         attributes: [
           db.sequelize.literal('ROUND(SUM("CollectionCards"."quantity"*"CollectionCards->CardPrice"."price")::numeric, 2) as "totalValue"'),
           db.sequelize.literal('array_agg(DISTINCT "CollectionCards->Card->CardColors"."color") AS colors'),
@@ -68,7 +69,7 @@ router.get(
   Get single collection for user
 */
 router.get(
-  '/:id',
+  '/collection/:id',
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     try {
@@ -94,7 +95,7 @@ router.get(
   Get all card for collection for user
 */
 router.get(
-  '/:id/cards',
+  '/collection/:id/cards',
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     const { id } = req.params;
@@ -199,9 +200,9 @@ router.post(
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     try {
-      const { name } = req.body;
+      const { name, coverUrl = null } = req.body;
       const userId = req.user.id;
-      const collection = await db.Collection.create({ name, userId });
+      const collection = await db.Collection.create({ name, coverUrl, userId });
 
       res.status(200).send(collection);
     } catch (error) {

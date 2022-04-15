@@ -49,16 +49,14 @@ router.get(
   Get card by name
 */
 router.get(
-  '/card/:name',
+  '/card/variants',
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     try {
-      const { name } = req.params;
+      const { name } = req.query || '';
       const cards = await db.Card.findAll({
         where: {
-          name: {
-            [Op.iLike]: `%${name}%`,
-          },
+          name,
         },
         order: [
           ['releasedAt', 'DESC'],
