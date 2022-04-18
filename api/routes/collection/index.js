@@ -213,7 +213,7 @@ router.post(
 );
 
 /*
-  POST /api/collections/card
+  POST /api/collections/colleciton/card
   Create collection card for user
 */
 router.post(

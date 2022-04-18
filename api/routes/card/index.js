@@ -33,6 +33,7 @@ router.get(
           {
             model: db.CardFinish,
           },
+          { model: db.CardColor, attributes: ['color'] },
         ],
         limit: 15,
       });
@@ -69,6 +70,7 @@ router.get(
           {
             model: db.CardFinish,
           },
+          { model: db.CardColor, attributes: ['color'] },
         ],
       });
       res.status(200).send(cards);
