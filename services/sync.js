@@ -104,13 +104,11 @@ const createPrices = async (model, value = {}) => {
                 typeval = 'NON-FOIL';
                 break;
             }
-            if (price) {
-              model.upsert({
-                cardId: value.id,
-                type: typeval,
-                price,
-              });
-            }
+            model.upsert({
+              cardId: value.id,
+              type: typeval,
+              price,
+            });
           }
           if (index === Object.entries(value.prices).length - 1) {
             resolve();
