@@ -100,9 +100,20 @@ router.get(
   async (req, res, next) => {
     const { id } = req.params;
     const {
-      name, limit = 50, offset = 0, order = 'ASC',
+      name, limit = 5, offset = 0, orderBy = 'name', order = 'ASC',
     } = req.query;
     let cardConditions = {};
+    const orderArray = () => {
+      switch (orderBy) {
+        case ('name'):
+        case ('setCode'):
+          return [{ model: db.Card }, orderBy, order];
+        case ('price'):
+          return [{ model: db.CardPrice }, orderBy, order];
+        default:
+          return [orderBy, order];
+      }
+    };
     if (name) {
       cardConditions = {
         ...cardConditions,
@@ -118,9 +129,7 @@ router.get(
         },
         limit,
         offset,
-        order: [
-          [{ model: db.Card }, 'name', order],
-        ],
+        order: [orderArray()],
         include: [
           { model: db.CardPrice },
           {

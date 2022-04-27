@@ -28,7 +28,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM('FOIL', 'NON-FOIL', 'ETCHED'),
         primaryKey: true,
       },
-      price: DataTypes.FLOAT,
+      price: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+      },
     },
     {
       sequelize,

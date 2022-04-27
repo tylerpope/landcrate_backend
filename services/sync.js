@@ -107,7 +107,7 @@ const createPrices = async (model, value = {}) => {
             model.upsert({
               cardId: value.id,
               type: typeval,
-              price,
+              price: price || 0.00,
             });
           }
           if (index === Object.entries(value.prices).length - 1) {
