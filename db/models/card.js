@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.CardPrice, { foreignKey: 'cardId' });
       this.hasMany(models.CardColor, { foreignKey: 'cardId' });
       this.hasMany(models.CardFinish, { foreignKey: 'cardId' });
+      this.belongsTo(models.Set, { foreignKey: 'setCode', targetKey: 'code' });
     }
   }
   Card.init(
@@ -70,6 +71,7 @@ module.exports = (sequelize, DataTypes) => {
       setCode: DataTypes.TEXT,
       setId: DataTypes.UUID,
       setName: DataTypes.TEXT,
+      legalities: DataTypes.JSON,
     },
     {
       sequelize,

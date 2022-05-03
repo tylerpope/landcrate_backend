@@ -76,11 +76,43 @@ router.get(
       const { id } = req.params;
       const collection = await db.Collection.findOne({
         where: { id },
+        order: [['name', 'ASC']],
         attributes: [
-          'name',
+          db.sequelize.literal('ROUND(SUM("CollectionCards"."quantity"*"CollectionCards->CardPrice"."price")::numeric, 2) as "totalValue"'),
+          db.sequelize.literal('array_agg(DISTINCT "CollectionCards->Card->CardColors"."color") AS colors'),
+          [
+            db.sequelize.literal(`(
+                SELECT SUM("CollectionCards"."quantity")
+                FROM "CollectionCards"
+                WHERE
+                    "Collection"."id" = "CollectionCards"."collectionId"
+            )`),
+            'totalCards',
+          ],
           'id',
+          'name',
           'coverUrl',
         ],
+        include: {
+          model: db.CollectionCard,
+          attributes: [],
+          include: [
+            {
+              model: db.CardPrice,
+              attributes: [],
+            },
+            {
+              model: db.Card,
+              attributes: [],
+              include: {
+                model: db.CardColor,
+                attributes: [],
+              },
+            },
+          ],
+        },
+        raw: true,
+        group: ['Collection.id'],
       });
       res.status(200).send(collection);
     } catch (error) {
@@ -131,14 +163,18 @@ router.get(
         offset,
         order: [orderArray()],
         include: [
-          { model: db.CardPrice },
+          { model: db.CardPrice, attributes: ['price'] },
           {
             model: db.Card,
             where: {
               ...cardConditions,
             },
+            include: [
+              { model: db.Set, attributes: ['name', 'parentSetCode', 'code'] },
+            ],
           },
         ],
+        attributes: ['id', 'condition', 'language', 'quantity'],
       });
       return res.status(200).send(collectionCards);
     } catch (error) {

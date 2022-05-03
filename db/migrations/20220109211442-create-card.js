@@ -134,6 +134,9 @@ module.exports = {
       setName: {
         type: Sequelize.DataTypes.TEXT,
       },
+      legalities: {
+        type: Sequelize.DataTypes.JSON,
+      },
     });
   },
   down: async (queryInterface) => {
