@@ -5,13 +5,19 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 
 router.post('/signup', async (req, res, next) => {
-  passport.authenticate('signup', { session: false }, async (err) => {
+  passport.authenticate('signup', { session: false }, async (err, user) => {
     try {
       if (err) {
         const errorMessage = err && err.errors[0] && err.errors[0].message === 'email must be unique' ? 'Email already registered' : 'An error has occured';
         return res.status(401).send(errorMessage);
       }
-      return res.status(200).send('User created successfully');
+      const body = { id: user.id, email: user.email };
+      const token = jwt.sign({ user: body }, process.env.SECRET);
+
+      return res.json({
+        email: user.email,
+        accessToken: token,
+      });
     } catch (error) {
       return next(error);
     }

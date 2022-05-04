@@ -8,7 +8,7 @@ module.exports = {
         type: Sequelize.DataTypes.INTEGER,
       },
       email: {
-        type: Sequelize.DataTypes.CITEXT,
+        type: Sequelize.DataTypes.STRING,
         unique: true,
         allowNull: false,
       },

@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
   }, {
     sequelize,
+    timestamps: false,
     modelName: 'Set',
   });
   return Set;

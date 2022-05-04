@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
       },
       email: {
-        type: DataTypes.CITEXT,
+        type: DataTypes.STRING,
         unique: true,
         allowNull: false,
       },

@@ -4,12 +4,16 @@ const fs = require('fs');
 const axios = require('axios');
 const request = require('request');
 const progress = require('request-progress');
+const Pick = require('stream-json/filters/Pick');
+const { streamArray } = require('stream-json/streamers/StreamArray');
+const { chain } = require('stream-chain');
 
 const db = require('../db/models');
 
 const cardsFilePath = './cards.json';
 const setsFilePath = './sets.json';
 const scryfallBulkEndpoint = 'https://api.scryfall.com/bulk-data';
+const scryfallSetEndpoint = 'https://api.scryfall.com/sets';
 
 const createCards = async (model, value) => {
   try {
@@ -186,64 +190,37 @@ const createCardFinishes = async (model, value) => {
   }
 };
 
-const createSet = async (model, value = {}) => {
-  try {
-    await new Promise((resolve, reject) => {
-      model.upsert({
-        id: value.id,
-        code: value.code,
-        name: value.name,
-        parentSetCode: value.parent_set_code,
-        setType: value.set_type,
-      });
-      resolve();
+const syncSetData = (startTime) => {
+  console.log('Writing Set Data..');
+  const pipeline = chain([
+    fs.createReadStream(setsFilePath),
+    Pick.withParser({ filter: 'data' }),
+    streamArray(),
+  ]);
+  pipeline.on('data', ({ key, value }) => {
+    db.Set.upsert({
+      id: value.id,
+      code: value.code,
+      name: value.name,
+      parentSetCode: value.parent_set_code,
+      setType: value.set_type,
     });
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-const syncAllSets = () => {
-  const fileStream = fs.createReadStream(setsFilePath);
-  const jsonStream = StreamArray.withParser();
-
-  console.log('Writing Data..');
-  const startTime = new Date();
-
-  const processingStream = new Writable({
-    write({ key, value }, encoding, callback) {
-      const syncData = async () => {
-        await createSet(db.Set, value);
-        callback();
-      };
-      syncData();
-    },
-    // Don't skip this, as we need to operate with objects, not buffers
-    objectMode: true,
   });
-
-  // Pipe the streams as follows
-  fileStream.pipe(jsonStream.input);
-  jsonStream.pipe(processingStream);
-
-  // So we're waiting for the 'finish' event when everything is done.
-  processingStream.on('finish', () => {
+  pipeline.on('finish', () => {
     const endTime = new Date();
     let timeDiff = endTime - startTime;
-
     timeDiff /= 1000;
-
     console.log(
       `Done! Total time elapsed ${Math.round(timeDiff / 60)} mintues`,
     );
   });
 };
 
-const syncAll = () => {
+const syncCardData = () => {
   const fileStream = fs.createReadStream(cardsFilePath);
   const jsonStream = StreamArray.withParser();
 
-  console.log('Writing Data..');
+  console.log('Writing Card Data..');
   const startTime = new Date();
 
   const processingStream = new Writable({
@@ -280,45 +257,48 @@ const syncAll = () => {
 
   // So we're waiting for the 'finish' event when everything is done.
   processingStream.on('finish', () => {
-    const endTime = new Date();
-    let timeDiff = endTime - startTime;
-
-    timeDiff /= 1000;
-
-    syncAllSets();
-
-    console.log(
-      `Done! Total time elapsed ${Math.round(timeDiff / 60)} mintues`,
-    );
+    syncSetData(startTime);
   });
 };
 
+const getSetData = () => progress(request(scryfallSetEndpoint), {})
+  .on('progress', (state) => {
+    console.log('progress', state);
+  })
+  .on('error', (err) => {
+    console.error(err);
+  })
+  .on('end', () => {
+    // Downloaded file, update database
+    console.log('Finished downloading set file.');
+    syncCardData();
+  })
+  .pipe(fs.createWriteStream(setsFilePath));
+
 // Download JSON and update SQL database
-// const getBulkData = () => axios.get(scryfallBulkEndpoint).then((res = {}) => {
-//   const defaultCards = res.data.data.find(
-//     (item) => item.type === 'default_cards',
-//   );
+const getBulkData = () => axios.get(scryfallBulkEndpoint).then((res = {}) => {
+  const defaultCards = res.data.data.find(
+    (item) => item.type === 'default_cards',
+  );
 
-//   if (!defaultCards) {
-//     console.error('Could not find all cards object.');
-//     return;
-//   }
+  if (!defaultCards) {
+    console.error('Could not find all cards object.');
+    return;
+  }
 
-//   progress(request(defaultCards.download_uri), {})
-//     .on('progress', (state) => {
-//       console.log('progress', state);
-//     })
-//     .on('error', (err) => {
-//       console.error(err);
-//     })
-//     .on('end', () => {
-//       // Downloaded file, update database
-//       console.log('Finished downloading file.');
-//       syncAll();
-//     })
-//     .pipe(fs.createWriteStream(cardsFilePath));
-// });
+  progress(request(defaultCards.download_uri), {})
+    .on('progress', (state) => {
+      console.log('progress', state);
+    })
+    .on('error', (err) => {
+      console.error(err);
+    })
+    .on('end', () => {
+      // Downloaded file, update database
+      console.log('Finished downloading cards file.');
+      getSetData();
+    })
+    .pipe(fs.createWriteStream(cardsFilePath));
+});
 
-// getBulkData();
-// syncAll();
-syncAllSets();
+syncSetData();

@@ -9,14 +9,6 @@ module.exports = {
         type: Sequelize.DataTypes.STRING,
         primaryKey: true,
       },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DataTypes.DATE,
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DataTypes.DATE,
-      },
     });
   },
   down: async (queryInterface) => {

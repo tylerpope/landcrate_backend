@@ -1,19 +1,19 @@
-const db = require('../db/models');
 const passport = require('passport');
-const localStrategy = require('passport-local').Strategy;
+const LocalStrategy = require('passport-local').Strategy;
 const JWTstrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
+const db = require('../db/models');
 
 passport.use(
   'signup',
-  new localStrategy(
+  new LocalStrategy(
     {
       usernameField: 'email',
       passwordField: 'password',
     },
     async (email, password, done) => {
       try {
-        const user = await db.User.create({ email, password });
+        const user = await db.User.create({ email: email.toLowerCase(), password });
         return done(null, user);
       } catch (error) {
         done(error);
@@ -24,7 +24,7 @@ passport.use(
 
 passport.use(
   'login',
-  new localStrategy(
+  new LocalStrategy(
     {
       usernameField: 'email',
       passwordField: 'password',
