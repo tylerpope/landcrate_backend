@@ -174,7 +174,7 @@ router.get(
             ],
           },
         ],
-        attributes: ['id', 'condition', 'language', 'quantity'],
+        attributes: ['id', 'condition', 'language', 'quantity', 'type'],
       });
       return res.status(200).send(collectionCards);
     } catch (error) {
