@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
       },
       type: {
-        type: DataTypes.ENUM('FOIL', 'NON-FOIL', 'ETCHED'),
+        type: DataTypes.STRING,
         primaryKey: true,
       },
       price: {

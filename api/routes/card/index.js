@@ -24,15 +24,9 @@ router.get(
         },
         order: [
           ['releasedAt', 'DESC'],
-          [db.CardFinish, 'finish', 'DESC'],
         ],
         include: [
-          {
-            model: db.CardPrice,
-          },
-          {
-            model: db.CardFinish,
-          },
+          { model: db.CardPrice },
           { model: db.CardColor, attributes: ['color'] },
         ],
         limit: 15,
@@ -61,15 +55,9 @@ router.get(
         },
         order: [
           ['releasedAt', 'DESC'],
-          [db.CardFinish, 'finish', 'DESC'],
         ],
         include: [
-          {
-            model: db.CardPrice,
-          },
-          {
-            model: db.CardFinish,
-          },
+          { model: db.CardPrice },
           { model: db.CardColor, attributes: ['color'] },
         ],
       });

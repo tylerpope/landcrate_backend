@@ -19,8 +19,6 @@ router.get(
         where: { userId },
         order: [['name', 'ASC']],
         attributes: [
-          db.sequelize.literal('ROUND(SUM("CollectionCards"."quantity"*"CollectionCards->CardPrice"."price")::numeric, 2) as "totalValue"'),
-          db.sequelize.literal('array_agg(DISTINCT "CollectionCards->Card->CardColors"."color") AS colors'),
           [
             db.sequelize.literal(`(
                 SELECT SUM("CollectionCards"."quantity")
@@ -29,6 +27,17 @@ router.get(
                     "Collection"."id" = "CollectionCards"."collectionId"
             )`),
             'totalCards',
+          ],
+          [
+            db.sequelize.literal(`(
+                SELECT ROUND(SUM("CollectionCards"."quantity"*"CardPrices"."price")::numeric, 2)
+                FROM "CollectionCards", "CardPrices"
+                WHERE
+                  "CollectionCards"."cardId" = "CardPrices"."cardId"
+                AND
+                  "CollectionCards"."type" = "CardPrices"."type"
+            )`),
+            'totalValue',
           ],
           'id',
           'name',
@@ -78,8 +87,17 @@ router.get(
         where: { id },
         order: [['name', 'ASC']],
         attributes: [
-          db.sequelize.literal('ROUND(SUM("CollectionCards"."quantity"*"CollectionCards->CardPrice"."price")::numeric, 2) as "totalValue"'),
-          db.sequelize.literal('array_agg(DISTINCT "CollectionCards->Card->CardColors"."color") AS colors'),
+          [
+            db.sequelize.literal(`(
+                SELECT ROUND(SUM("CollectionCards"."quantity"*"CardPrices"."price")::numeric, 2)
+                FROM "CollectionCards", "CardPrices"
+                WHERE
+                  "CollectionCards"."cardId" = "CardPrices"."cardId"
+                AND
+                  "CollectionCards"."type" = "CardPrices"."type"
+            )`),
+            'totalValue',
+          ],
           [
             db.sequelize.literal(`(
                 SELECT SUM("CollectionCards"."quantity")
@@ -132,7 +150,7 @@ router.get(
   async (req, res, next) => {
     const { id } = req.params;
     const {
-      name, limit = 5, offset = 0, orderBy = 'name', order = 'ASC',
+      name, limit = 50, offset = 0, orderBy = 'name', order = 'ASC',
     } = req.query;
     let cardConditions = {};
     const orderArray = () => {
@@ -174,7 +192,15 @@ router.get(
             ],
           },
         ],
-        attributes: ['id', 'condition', 'language', 'quantity', 'type'],
+        attributes: [
+          'id',
+          'condition',
+          'language',
+          'quantity',
+          'type',
+          'purchasePrice',
+          'cardId',
+        ],
       });
       return res.status(200).send(collectionCards);
     } catch (error) {
@@ -196,6 +222,7 @@ router.get(
       const {
         name, limit = 50, offset = 0, order = 'ASC',
       } = req.query;
+
       let conditions = {};
 
       if (name) {
@@ -206,6 +233,7 @@ router.get(
           },
         };
       }
+
       const allCards = await db.CollectionCard.findAndCountAll(
         {
           where: { userId },
@@ -214,10 +242,17 @@ router.get(
           order: [
             [{ model: db.Card }, 'name', order],
           ],
-          attributes: ['id', 'quantity', 'type', 'condition', 'language', 'purchasePrice', 'collectionId'],
+          attributes: [
+            'id',
+            'quantity',
+            'type',
+            'condition',
+            'language',
+            'purchasePrice',
+            'collectionId',
+          ],
           include: [
             { model: db.Card, where: conditions },
-            { model: db.CardPrice, attributes: ['price'] },
             {
               model: db.Collection,
               attributes: [
@@ -228,6 +263,7 @@ router.get(
           ],
         },
       );
+
       res.status(200).send(allCards);
     } catch (error) {
       return next(error);
@@ -323,6 +359,7 @@ router.put(
         condition,
         language,
         purchasePrice,
+        priceId,
         quantity,
         type,
         id,
@@ -344,6 +381,7 @@ router.put(
         language,
         purchasePrice,
         quantity,
+        priceId,
         type,
       });
 

@@ -64,6 +64,18 @@ const createCards = async (model, value) => {
       setId: value.set_id,
       setName: value.set_name,
       legalities: value.legalities,
+      hasFoil: value.finishes
+        ? value.finishes.includes('foil')
+        : false,
+      hasNonFoil: value.finishes
+        ? value.finishes.includes('nonfoil')
+        : false,
+      hasEtched: value.finishes
+        ? value.finishes.includes('etched')
+        : false,
+      hasGlossy: value.glossy
+        ? value.finishes.includes('etched')
+        : false,
     });
   } catch (err) {
     console.error(err);
@@ -151,45 +163,6 @@ const createCardColorIdentity = async (model, value = {}) => {
   }
 };
 
-const createCardFinishes = async (model, value) => {
-  try {
-    await new Promise((resolve, reject) => {
-      if (value.finishes.length) {
-        value.finishes.forEach((finish, index) => {
-          let standardFinish = '';
-          switch (finish) {
-            case 'foil':
-              standardFinish = 'FOIL';
-              break;
-            case 'nonfoil':
-              standardFinish = 'NON-FOIL';
-              break;
-            case 'glossy':
-              standardFinish = 'FOIL';
-              break;
-            case 'etched':
-              standardFinish = 'ETCHED';
-              break;
-            default:
-              break;
-          }
-          model.upsert({
-            cardId: value.id,
-            finish: standardFinish,
-          });
-          if (index === value.finishes.length - 1) {
-            resolve();
-          }
-        });
-      } else {
-        resolve();
-      }
-    });
-  } catch (err) {
-    console.error(err);
-  }
-};
-
 const syncSetData = (startTime) => {
   console.log('Writing Set Data..');
   const pipeline = chain([
@@ -237,9 +210,7 @@ const syncCardData = () => {
         if (value.color_identity) {
           await createCardColorIdentity(db.CardColorIdentity, value);
         }
-        if (value.finishes) {
-          await createCardFinishes(db.CardFinish, value);
-        }
+
         // setTimeout(() => {
         //   callback();
         // }, 10);
@@ -301,4 +272,4 @@ const getBulkData = () => axios.get(scryfallBulkEndpoint).then((res = {}) => {
     .pipe(fs.createWriteStream(cardsFilePath));
 });
 
-syncSetData();
+getBulkData();

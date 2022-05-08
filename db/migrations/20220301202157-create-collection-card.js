@@ -39,7 +39,7 @@ module.exports = {
         allowNull: false,
       },
       type: {
-        type: Sequelize.DataTypes.ENUM('FOIL', 'NON-FOIL', 'ETCHED'),
+        type: Sequelize.DataTypes.STRING,
         allowNull: false,
       },
       createdAt: {
