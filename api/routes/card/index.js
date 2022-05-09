@@ -29,6 +29,7 @@ router.get(
         include: [
           { model: db.CardPrice },
           { model: db.CardColor, attributes: ['color'] },
+          { model: db.CardFinish },
         ],
       });
       res.status(200).send(uniqBy(cards, 'dataValues.name'));
@@ -59,6 +60,7 @@ router.get(
         include: [
           { model: db.CardPrice },
           { model: db.CardColor, attributes: ['color'] },
+          { model: db.CardFinish },
         ],
       });
       res.status(200).send(cards);

@@ -170,6 +170,7 @@ router.get(
             include: [
               { model: db.Set, attributes: ['name', 'parentSetCode', 'code'] },
               { model: db.CardPrice },
+              { model: db.CardFinish },
             ],
           },
         ],
@@ -286,7 +287,7 @@ router.post(
     const userId = req.user.id;
     try {
       const {
-        cardId, collectionId, condition, language, purchasePrice, quantity, type, priceId, imgUrl,
+        cardId, collectionId, condition, language, purchasePrice, quantity, type, imgUrl,
       } = req.body;
 
       const collection = await db.Collection.findOne({ where: { id: collectionId } });
@@ -294,15 +295,28 @@ router.post(
       if (!collection || collection.userId !== userId) {
         return res.status(500).send('An error has occured');
       }
+
       const collectionCard = await db.CollectionCard.findOne({
         where: {
           cardId, userId, collectionId, condition, language, purchasePrice, type,
         },
       });
 
+      const cardPrice = await db.CardPrice.findOne({
+        where: {
+          cardId, type,
+        },
+      });
+
+      if (!cardPrice) {
+        return res.status(500).send('An error has occured');
+      }
+
+      const { id } = cardPrice.dataValues;
+
       if (collectionCard) {
         const card = await collectionCard.update(
-          { quantity: +collectionCard.dataValues.quantity + +quantity, priceId },
+          { quantity: +collectionCard.dataValues.quantity + +quantity, priceId: id },
         );
         return res.status(200).send(card);
       }
@@ -314,7 +328,16 @@ router.post(
       }
 
       const card = await db.CollectionCard.create({
-        cardId, collectionId, condition, language, purchasePrice, quantity, type, priceId, userId,
+        cardId,
+        collectionId,
+        condition,
+        language,
+        purchasePrice,
+        quantity,
+        type,
+        priceId:
+        id,
+        userId,
       });
 
       res.status(200).send(card);
@@ -341,11 +364,23 @@ router.put(
         condition,
         language,
         purchasePrice,
-        priceId,
         quantity,
         type,
         id,
       } = req.body;
+
+      const collectionCard = await db.CollectionCard.findOne({
+        where: {
+          cardId, userId, collectionId, condition, language, purchasePrice, type,
+        },
+      });
+
+      if (collectionCard) {
+        const card = await collectionCard.update(
+          { quantity: +collectionCard.dataValues.quantity + +quantity, priceId: id },
+        );
+        return res.status(200).send(card);
+      }
 
       const card = await db.CollectionCard.findOne({
         where: {
@@ -354,7 +389,17 @@ router.put(
         },
       });
 
+      const cardPrice = await db.CardPrice.findOne({
+        where: {
+          cardId, type,
+        },
+      });
+
       if (!card) return res.status(404).send('Card Not Found');
+
+      if (!cardPrice) {
+        return res.status(500).send('An error has occured');
+      }
 
       const updatedCard = await card.update({
         cardId,
@@ -363,7 +408,7 @@ router.put(
         language,
         purchasePrice,
         quantity,
-        priceId,
+        priceId: cardPrice.dataValues.id,
         type,
       });
 

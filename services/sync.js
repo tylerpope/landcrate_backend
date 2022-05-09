@@ -163,6 +163,45 @@ const createCardColorIdentity = async (model, value = {}) => {
   }
 };
 
+const createCardFinishes = async (model, value) => {
+  try {
+    await new Promise((resolve, reject) => {
+      if (value.finishes.length) {
+        value.finishes.forEach((finish, index) => {
+          let standardFinish = '';
+          switch (finish) {
+            case 'foil':
+              standardFinish = 'FOIL';
+              break;
+            case 'nonfoil':
+              standardFinish = 'NON-FOIL';
+              break;
+            case 'glossy':
+              standardFinish = 'FOIL';
+              break;
+            case 'etched':
+              standardFinish = 'ETCHED';
+              break;
+            default:
+              break;
+          }
+          model.upsert({
+            cardId: value.id,
+            finish: standardFinish,
+          });
+          if (index === value.finishes.length - 1) {
+            resolve();
+          }
+        });
+      } else {
+        resolve();
+      }
+    });
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 const syncSetData = (startTime) => {
   console.log('Writing Set Data..');
   const pipeline = chain([
@@ -200,6 +239,7 @@ const syncCardData = () => {
     write({ key, value }, encoding, callback) {
       const syncData = async () => {
         if (value.layout === 'art_series') return callback();
+        if (!value.games.includes('paper')) return callback();
         await createCards(db.Card, value);
         if (value.colors) {
           await createCardColor(db.CardColor, value);
@@ -210,7 +250,9 @@ const syncCardData = () => {
         if (value.color_identity) {
           await createCardColorIdentity(db.CardColorIdentity, value);
         }
-
+        if (value.finishes) {
+          await createCardFinishes(db.CardFinish, value);
+        }
         // setTimeout(() => {
         //   callback();
         // }, 10);
@@ -272,4 +314,4 @@ const getBulkData = () => axios.get(scryfallBulkEndpoint).then((res = {}) => {
     .pipe(fs.createWriteStream(cardsFilePath));
 });
 
-getBulkData();
+syncCardData();
