@@ -28,17 +28,7 @@ router.get(
             )`),
             'totalCards',
           ],
-          [
-            db.sequelize.literal(`(
-                SELECT ROUND(SUM("CollectionCards"."quantity"*"CardPrices"."price")::numeric, 2)
-                FROM "CollectionCards", "CardPrices"
-                WHERE
-                  "CollectionCards"."cardId" = "CardPrices"."cardId"
-                AND
-                  "CollectionCards"."type" = "CardPrices"."type"
-            )`),
-            'totalValue',
-          ],
+          db.sequelize.literal('ROUND(SUM("CollectionCards"."quantity"*"CollectionCards->CardPrice"."price")::numeric, 2) as "totalValue"'),
           'id',
           'name',
           'coverUrl',
@@ -87,17 +77,7 @@ router.get(
         where: { id },
         order: [['name', 'ASC']],
         attributes: [
-          [
-            db.sequelize.literal(`(
-                SELECT ROUND(SUM("CollectionCards"."quantity"*"CardPrices"."price")::numeric, 2)
-                FROM "CollectionCards", "CardPrices"
-                WHERE
-                  "CollectionCards"."cardId" = "CardPrices"."cardId"
-                AND
-                  "CollectionCards"."type" = "CardPrices"."type"
-            )`),
-            'totalValue',
-          ],
+          db.sequelize.literal('ROUND(SUM("CollectionCards"."quantity"*"CollectionCards->CardPrice"."price")::numeric, 2) as "totalValue"'),
           [
             db.sequelize.literal(`(
                 SELECT SUM("CollectionCards"."quantity")
@@ -181,7 +161,7 @@ router.get(
         offset,
         order: [orderArray()],
         include: [
-          { model: db.CardPrice, attributes: ['price'] },
+          { model: db.CardPrice },
           {
             model: db.Card,
             where: {
@@ -189,6 +169,7 @@ router.get(
             },
             include: [
               { model: db.Set, attributes: ['name', 'parentSetCode', 'code'] },
+              { model: db.CardPrice },
             ],
           },
         ],
@@ -201,6 +182,7 @@ router.get(
           'purchasePrice',
           'cardId',
         ],
+        subQuery: false,
       });
       return res.status(200).send(collectionCards);
     } catch (error) {

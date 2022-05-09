@@ -25,11 +25,11 @@ router.get(
         order: [
           ['releasedAt', 'DESC'],
         ],
+        limit: 4,
         include: [
           { model: db.CardPrice },
           { model: db.CardColor, attributes: ['color'] },
         ],
-        limit: 15,
       });
       res.status(200).send(uniqBy(cards, 'dataValues.name'));
     } catch (error) {
