@@ -72,10 +72,6 @@ module.exports = (sequelize, DataTypes) => {
       setId: DataTypes.UUID,
       setName: DataTypes.TEXT,
       legalities: DataTypes.JSON,
-      hasFoil: DataTypes.BOOLEAN,
-      hasEtched: DataTypes.BOOLEAN,
-      hasNonFoil: DataTypes.BOOLEAN,
-      hasGlossy: DataTypes.BOOLEAN,
     },
     {
       sequelize,

@@ -76,18 +76,22 @@ router.get(
       const userId = req.user.id;
 
       if (id === 'all') {
-        const allCollections = await db.sequelize.query(`SELECT
-          ROUND(SUM("CollectionCards"."quantity"*"CardPrices"."price")::numeric, 2) as totalValue,
-          sum("CollectionCards"."quantity") as totalCards
+        const allCollections = await db.sequelize.query(`
+          SELECT ROUND(SUM("CollectionCards"."quantity"*"CardPrices"."price")::numeric, 2) as totalValue,
+          SUM("CollectionCards"."quantity") as totalCards
           FROM "CollectionCards"
           LEFT JOIN "CardPrices" ON ("CollectionCards"."priceId"="CardPrices"."id")
+          WHERE "CollectionCards"."userId" = '${userId}'
           GROUP BY "CollectionCards"."userId"`, { plain: true });
+        const all = {
+          name: 'All Cards',
+        };
+        if (allCollections) {
+          all.totalCards = allCollections.totalcards || 0;
+          all.totalValue = allCollections.totalvalue || '0.00';
+        }
         return res.status(200).send(
-          {
-            totalCards: allCollections.totalcards || 0,
-            totalValue: allCollections.totalvalue || '0.00',
-            name: 'All Cards',
-          },
+          all,
         );
       }
 
@@ -310,6 +314,7 @@ router.post(
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     const userId = req.user.id;
+
     try {
       const {
         cardId, collectionId, condition, language, purchasePrice, quantity, type, imgUrl,
@@ -401,13 +406,13 @@ router.put(
         },
       });
 
+      if (!card) return res.status(404).send('Card Not Found');
+
       const cardPrice = await db.CardPrice.findOne({
         where: {
           cardId, type,
         },
       });
-
-      if (!card) return res.status(404).send('Card Not Found');
 
       if (!cardPrice) {
         return res.status(500).send('An error has occured');

@@ -137,18 +137,6 @@ module.exports = {
       legalities: {
         type: Sequelize.DataTypes.JSON,
       },
-      hasFoil: {
-        type: Sequelize.DataTypes.BOOLEAN,
-      },
-      hasEtched: {
-        type: Sequelize.DataTypes.BOOLEAN,
-      },
-      hasNonFoil: {
-        type: Sequelize.DataTypes.BOOLEAN,
-      },
-      hasGlossy: {
-        type: Sequelize.DataTypes.BOOLEAN,
-      },
     });
   },
   down: async (queryInterface) => {
