@@ -51,11 +51,11 @@ module.exports = {
         type: Sequelize.DataTypes.DATE,
       },
     });
-    await queryInterface.addConstraint('CollectionCards', {
-      fields: ['cardId', 'type', 'condition', 'language', 'purchasePrice', 'collectionId'],
-      type: 'unique',
-      name: 'CollectionCard_Unique',
-    });
+    // await queryInterface.addConstraint('CollectionCards', {
+    //   fields: ['cardId', 'type', 'condition', 'language', 'purchasePrice', 'collectionId'],
+    //   type: 'unique',
+    //   name: 'CollectionCard_Unique',
+    // });
   },
   async down(queryInterface) {
     await queryInterface.dropTable('CollectionCards');

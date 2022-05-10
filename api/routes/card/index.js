@@ -24,6 +24,7 @@ router.get(
         },
         order: [
           ['releasedAt', 'DESC'],
+          [db.CardFinish, 'finish', 'DESC'],
         ],
         limit: 4,
         include: [
@@ -56,6 +57,7 @@ router.get(
         },
         order: [
           ['releasedAt', 'DESC'],
+          [db.CardFinish, 'finish', 'DESC'],
         ],
         include: [
           { model: db.CardPrice },

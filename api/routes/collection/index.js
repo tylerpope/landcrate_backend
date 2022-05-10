@@ -73,8 +73,26 @@ router.get(
   async (req, res, next) => {
     try {
       const { id } = req.params;
+      const userId = req.user.id;
+
+      if (id === 'all') {
+        const allCollections = await db.sequelize.query(`SELECT
+          ROUND(SUM("CollectionCards"."quantity"*"CardPrices"."price")::numeric, 2) as totalValue,
+          sum("CollectionCards"."quantity") as totalCards
+          FROM "CollectionCards"
+          LEFT JOIN "CardPrices" ON ("CollectionCards"."priceId"="CardPrices"."id")
+          GROUP BY "CollectionCards"."userId"`, { plain: true });
+        return res.status(200).send(
+          {
+            totalCards: allCollections.totalcards || 0,
+            totalValue: allCollections.totalvalue || '0.00',
+            name: 'All Cards',
+          },
+        );
+      }
+
       const collection = await db.Collection.findOne({
-        where: { id },
+        where: { id, userId },
         order: [['name', 'ASC']],
         attributes: [
           db.sequelize.literal('ROUND(SUM("CollectionCards"."quantity"*"CollectionCards->CardPrice"."price")::numeric, 2) as "totalValue"'),
@@ -112,6 +130,7 @@ router.get(
         raw: true,
         group: ['Collection.id'],
       });
+
       res.status(200).send(collection);
     } catch (error) {
       return next(error);
@@ -129,10 +148,12 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     const { id } = req.params;
+    const userId = req.user.id;
     const {
       name, limit = 50, offset = 0, orderBy = 'name', order = 'ASC',
     } = req.query;
     let cardConditions = {};
+    const whereConditions = { userId };
     const orderArray = () => {
       switch (orderBy) {
         case ('name'):
@@ -152,25 +173,28 @@ router.get(
         },
       };
     }
+    if (id !== 'all') {
+      whereConditions.collectionId = id;
+    }
     try {
       const collectionCards = await db.CollectionCard.findAndCountAll({
-        where: {
-          collectionId: id,
-        },
+        where: whereConditions,
         limit,
         offset,
         order: [orderArray()],
+        distinct: 'CollectionCards.id',
         include: [
-          { model: db.CardPrice },
+          { model: db.CardPrice, attributes: ['price'] },
           {
             model: db.Card,
+            attributes: ['id', 'name', 'imageUris', 'legalities', 'rarity', 'scryfallUri', 'tcgPlayerId'],
             where: {
               ...cardConditions,
             },
             include: [
               { model: db.Set, attributes: ['name', 'parentSetCode', 'code'] },
-              { model: db.CardPrice },
-              { model: db.CardFinish },
+              { model: db.CardPrice, attributes: ['type', 'price'] },
+              { model: db.CardFinish, attributes: ['finish'] },
             ],
           },
         ],
@@ -202,6 +226,7 @@ router.get(
   async (req, res, next) => {
     try {
       const userId = req.user.id;
+
       const {
         name, limit = 50, offset = 0, order = 'ASC',
       } = req.query;
@@ -368,19 +393,6 @@ router.put(
         type,
         id,
       } = req.body;
-
-      const collectionCard = await db.CollectionCard.findOne({
-        where: {
-          cardId, userId, collectionId, condition, language, purchasePrice, type,
-        },
-      });
-
-      if (collectionCard) {
-        const card = await collectionCard.update(
-          { quantity: +collectionCard.dataValues.quantity + +quantity, priceId: id },
-        );
-        return res.status(200).send(card);
-      }
 
       const card = await db.CollectionCard.findOne({
         where: {
