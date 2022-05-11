@@ -191,7 +191,16 @@ router.get(
           { model: db.CardPrice, attributes: ['price'] },
           {
             model: db.Card,
-            attributes: ['id', 'name', 'imageUris', 'legalities', 'rarity', 'scryfallUri', 'tcgPlayerId'],
+            attributes: [
+              'id',
+              'name',
+              'imageUris',
+              'legalities',
+              'rarity',
+              'scryfallUri',
+              'oracleText',
+              'tcgPlayerId',
+            ],
             where: {
               ...cardConditions,
             },
