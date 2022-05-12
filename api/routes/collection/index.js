@@ -59,7 +59,6 @@ router.get(
     } catch (error) {
       return next(error);
     }
-    return next();
   },
 );
 
@@ -139,7 +138,6 @@ router.get(
     } catch (error) {
       return next(error);
     }
-    return next();
   },
 );
 
@@ -289,7 +287,6 @@ router.get(
     } catch (error) {
       return next(error);
     }
-    return next();
   },
 );
 
@@ -305,12 +302,10 @@ router.post(
       const { name, coverUrl = null } = req.body;
       const userId = req.user.id;
       const collection = await db.Collection.create({ name, coverUrl, userId });
-
       res.status(200).send(collection);
     } catch (error) {
       return next(error);
     }
-    return next();
   },
 );
 
@@ -383,7 +378,6 @@ router.post(
     } catch (error) {
       return next(error);
     }
-    return next();
   },
 );
 
@@ -442,7 +436,6 @@ router.put(
     } catch (err) {
       return next(err);
     }
-    return next();
   },
 );
 
@@ -472,7 +465,6 @@ router.delete(
     } catch (error) {
       return next(error);
     }
-    return next();
   },
 );
 
@@ -504,7 +496,6 @@ router.delete(
     } catch (error) {
       return next(error);
     }
-    return next();
   },
 );
 

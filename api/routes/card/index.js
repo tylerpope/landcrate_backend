@@ -37,7 +37,6 @@ router.get(
     } catch (error) {
       return next(error);
     }
-    return next();
   },
 );
 
@@ -69,7 +68,6 @@ router.get(
     } catch (error) {
       return next(error);
     }
-    return next();
   },
 );
 
