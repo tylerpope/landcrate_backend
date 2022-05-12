@@ -12,7 +12,7 @@ router.post('/signup', async (req, res, next) => {
         return res.status(401).send(errorMessage);
       }
       const body = { id: user.id, email: user.email };
-      const token = jwt.sign({ user: body }, process.env.SECRET);
+      const token = jwt.sign({ user: body }, process.env.SECRET, { expiresIn: '24h' });
 
       return res.json({
         email: user.email,
@@ -36,7 +36,7 @@ router.post('/signin', async (req, res, next) => {
         if (error) return next(error);
 
         const body = { id: user.id, email: user.email };
-        const token = jwt.sign({ user: body }, process.env.SECRET);
+        const token = jwt.sign({ user: body }, process.env.SECRET, { expiresIn: '24h' });
 
         return res.json({
           email: user.email,

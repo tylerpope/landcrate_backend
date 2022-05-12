@@ -17,6 +17,10 @@ const card = require('./api/routes/card');
 require('./services/auth');
 
 app.use(bodyParser.json());
+app.use((req, res, next) => {
+  res.setHeader('Content-Type', 'application/json');
+  next();
+});
 app.use('/api/auth', auth);
 app.use('/api/user', user);
 app.use('/api/collections', collection);

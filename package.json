@@ -28,8 +28,8 @@
   "scripts": {
     "db:sync": "node ./services/sync",
     "db:sync:prices": "node ./services/syncPrices",
-    "start": "nodemon index.js",
-    "start:prod": "node index.js"
+    "start:dev": "nodemon index.js",
+    "start": "node index.js"
   },
   "devDependencies": {
     "eslint": "^8.10.0",
