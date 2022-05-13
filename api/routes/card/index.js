@@ -33,7 +33,7 @@ router.get(
           { model: db.CardFinish },
         ],
       });
-      res.status(200).send(uniqBy(cards, 'dataValues.name'));
+      return res.status(200).send(uniqBy(cards, 'dataValues.name'));
     } catch (error) {
       return next(error);
     }
@@ -64,7 +64,7 @@ router.get(
           { model: db.CardFinish },
         ],
       });
-      res.status(200).send(cards);
+      return res.status(200).send(cards);
     } catch (error) {
       return next(error);
     }

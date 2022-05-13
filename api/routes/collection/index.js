@@ -55,7 +55,7 @@ router.get(
         group: ['Collection.id'],
       });
 
-      res.status(200).send(collections);
+      return res.status(200).send(collections);
     } catch (error) {
       return next(error);
     }
@@ -134,7 +134,7 @@ router.get(
         group: ['Collection.id'],
       });
 
-      res.status(200).send(collection);
+      return res.status(200).send(collection);
     } catch (error) {
       return next(error);
     }
@@ -283,7 +283,7 @@ router.get(
         },
       );
 
-      res.status(200).send(allCards);
+      return res.status(200).send(allCards);
     } catch (error) {
       return next(error);
     }
@@ -302,7 +302,7 @@ router.post(
       const { name, coverUrl = null } = req.body;
       const userId = req.user.id;
       const collection = await db.Collection.create({ name, coverUrl, userId });
-      res.status(200).send(collection);
+      return res.status(200).send(collection);
     } catch (error) {
       return next(error);
     }
@@ -374,9 +374,46 @@ router.post(
         userId,
       });
 
-      res.status(200).send(card);
+      return res.status(200).send(card);
     } catch (error) {
       return next(error);
+    }
+  },
+);
+
+/*
+  PUT /api/collections/collection/
+  Update collection card for user
+*/
+router.put(
+  '/collection',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res, next) => {
+    try {
+      const userId = req.user.id;
+      const {
+        id,
+        coverUrl,
+        name,
+      } = req.body;
+      const collection = await db.Collection.findOne({
+        where: {
+          id,
+          userId,
+        },
+      });
+      if (!collection) return res.status(404).send('Collection Not Found');
+      const updateItems = {};
+      if (coverUrl) {
+        updateItems.coverUrl = coverUrl;
+      }
+      if (name) {
+        updateItems.name = name;
+      }
+      const updatedCollection = await collection.update({ ...updateItems });
+      return res.status(200).send(updatedCollection);
+    } catch (err) {
+      return next(err);
     }
   },
 );
@@ -432,7 +469,7 @@ router.put(
         type,
       });
 
-      res.status(200).send(updatedCard);
+      return res.status(200).send(updatedCard);
     } catch (err) {
       return next(err);
     }
@@ -473,11 +510,11 @@ router.delete(
   Delete collection card for user
 */
 router.delete(
-  '/collection/:id',
+  '/collection',
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     try {
-      const { id } = req.params;
+      const { id } = req.query;
       const userId = req.user.id;
 
       const collection = await db.Collection.findOne({
@@ -492,7 +529,7 @@ router.delete(
       }
 
       await collection.destroy();
-      res.status(200).send({ message: 'Collection was deleted successfully.' });
+      return res.status(200).send({ message: 'Collection was deleted successfully.' });
     } catch (error) {
       return next(error);
     }
