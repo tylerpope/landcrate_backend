@@ -31,19 +31,19 @@ router.put(
       });
 
       if (!user) return res.status(500).send('An error has occured.');
-      const updates = {
-        password,
-      };
+      const fields = [];
 
       if (email) {
-        updates.email = email;
+        user.email = email;
+        fields.push('email');
       }
 
       if (password) {
-        updates.password = password;
+        user.password = password;
+        fields.push('password');
       }
 
-      await user.update(updates);
+      await user.save({ fields });
 
       return res.status(200).send('User successfully updated.');
     } catch (err) {
