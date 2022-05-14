@@ -26,11 +26,14 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
     },
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(64),
       allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
     },
     coverUrl: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(64),
     },
     userId: {
       type: DataTypes.INTEGER,

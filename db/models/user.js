@@ -21,11 +21,11 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
       },
       email: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(32),
         unique: true,
         allowNull: false,
       },
-      password: DataTypes.STRING,
+      password: DataTypes.STRING(32),
     },
     {
       sequelize,
