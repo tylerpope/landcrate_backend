@@ -21,6 +21,7 @@ router.put(
     const {
       email,
       password,
+      currentPassword,
     } = req.body;
 
     try {
@@ -31,21 +32,31 @@ router.put(
       });
 
       if (!user) return res.status(500).send('An error has occured.');
+
       const fields = [];
 
+      const updates = {};
+
       if (email) {
-        user.email = email;
+        updates.email = email;
         fields.push('email');
       }
 
       if (password) {
-        user.password = password;
+        updates.password = password;
         fields.push('password');
+        const validate = await user.isValidPassword(currentPassword);
+        if (!validate) {
+          res.statusMessage = 'Incorrect current password';
+          return res.status(400).end();
+        }
       }
 
-      await user.save({ fields });
+      await user.update(updates, { fields });
 
-      return res.status(200).send('User successfully updated.');
+      return res.status(200).send(`${fields.includes('email')
+        ? 'Email successfully updated.'
+        : 'Password successfully changed'}`);
     } catch (err) {
       return next(err);
     }
