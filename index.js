@@ -21,6 +21,7 @@ app.use((req, res, next) => {
   res.setHeader('Content-Type', 'application/json');
   next();
 });
+app.use('/', (req, res, next) => res.json({ message: 'Root of landcrate api' }));
 app.use('/api/auth', auth);
 app.use('/api/user', user);
 app.use('/api/collections', collection);
